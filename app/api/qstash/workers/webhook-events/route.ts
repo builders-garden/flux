@@ -34,9 +34,6 @@ export const POST = async (req: NextRequest) => {
     body: JSON.stringify(webhookPayload),
   });
 
-  const resData = await response.json();
-  console.log({ data: resData });
-
   let status: WebhookEventLogStatus = WebhookEventLogStatus.UNKNOWN;
   if (response.status === 200) {
     status = WebhookEventLogStatus.SUCCESS;
