@@ -45,6 +45,7 @@ model PaymentLink {
   id          String   @id @default(uuid())
   name        String
   slug        String   @unique
+  redirectUrl String
   requiresWorldId Boolean @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
