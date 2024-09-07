@@ -1,13 +1,14 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from "./index"
 
-const prisma = new PrismaClient();
-
-export async function createCustomer(address: string) {
+export async function createCustomer(address: string, userId: string) {
   try {
-    const customer = await prisma.customer.create({
-      data: { address },
+    const newCustomer = await prisma.customer.create({
+      data: {
+        address,
+        userId,
+      },
     });
-    return customer;
+    return newCustomer;
   } catch (error) {
     console.error('Error creating customer:', error);
     throw error;
@@ -16,36 +17,18 @@ export async function createCustomer(address: string) {
   }
 }
 
-export async function getCustomerByAddress(address: string) {
+export async function getCustomersByUserId(userId: string) {
   try {
-    const customer = await prisma.customer.findUnique({
-      where: { address },
+    const customers = await prisma.customer.findMany({
+      where: { userId },
       include: { transactions: true },
     });
-    return customer;
+    return customers;
   } catch (error) {
-    console.error('Error fetching customer:', error);
+    console.error('Error fetching customers:', error);
     throw error;
   } finally {
     await prisma.$disconnect();
   }
 }
 
-export async function getCustomerWithTransactions(customerId: string) {
-  try {
-    const customer = await prisma.customer.findUnique({
-      where: { id: customerId },
-      include: {
-        transactions: {
-          orderBy: { createdAt: 'desc' },
-        },
-      },
-    });
-    return customer;
-  } catch (error) {
-    console.error('Error fetching customer with transactions:', error);
-    throw error;
-  } finally {
-    await prisma.$disconnect();
-  }
-}

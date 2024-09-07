@@ -15,13 +15,15 @@ datasource db {
 
 model User {
   id                 String        @id @default(uuid())
-  address            String
+  fullName           String?
+  address            String        @unique
   email              String        @unique
-  smartAccountAddress String? //must be optional, togliere dal create e lo metto solo in update
+  smartAccountAddress String? 
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt
   products           Product[]
   paymentLinks       PaymentLink[]
+  customers           Customer[]
 }
 
 model Product {
@@ -61,7 +63,7 @@ model Webhook {
 model Transaction {
   id         String   @id @default(uuid())
   hash       String   @unique
-  amount     Decimal  @db.Decimal(10, 2)
+  amount     String  
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   customerId String
@@ -73,5 +75,7 @@ model Customer {
   address      String        @unique
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
+  userId       String
+  user         User          @relation(fields: [userId], references: [id])
   transactions Transaction[]
 }

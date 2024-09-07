@@ -1,6 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "./index"
 
-const prisma = new PrismaClient();
 
 //Create User entry in DB
 export async function createUser(address: string, email: string) {
@@ -27,6 +26,7 @@ export async function updateUser(
     address?: string;
     email?: string;
     smartAccountAddress?: string;
+    fullName?: string;
   }
 ) {
   try {
