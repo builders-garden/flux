@@ -1,5 +1,6 @@
 import { WebhookEventType } from "@prisma/client";
 import { prisma } from "./index";
+import { deleteWebhookEventLogsByWebhookId } from "./webhook-event-logs";
 
 export async function createWebhook(
   userId: string,
@@ -21,8 +22,9 @@ export async function createWebhook(
   }
 }
 
-export async function deleteWebhook(id: string) {
+export const deleteWebhook = async (id: string) => {
   try {
+    await deleteWebhookEventLogsByWebhookId(id);
     await prisma.webhook.delete({
       where: { id },
     });
@@ -30,7 +32,7 @@ export async function deleteWebhook(id: string) {
     console.error("Error deleting webhook:", error);
     throw error;
   }
-}
+};
 
 export async function getWebhookById(id: string, userId: string) {
   try {

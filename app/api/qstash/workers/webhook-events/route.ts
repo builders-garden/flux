@@ -25,9 +25,6 @@ export const POST = async (req: NextRequest) => {
     privateKey
   ).toString("base64");
 
-  console.log(JSON.stringify({ url: webhook.url, payload: webhookPayload }));
-  console.log({ signature });
-
   const response = await fetch(webhook.url, {
     method: "POST",
     headers: {
@@ -36,6 +33,9 @@ export const POST = async (req: NextRequest) => {
     },
     body: JSON.stringify(webhookPayload),
   });
+
+  const resData = await response.json();
+  console.log({ data: resData });
 
   let status: WebhookEventLogStatus = WebhookEventLogStatus.UNKNOWN;
   if (response.status === 200) {
