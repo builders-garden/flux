@@ -1,13 +1,14 @@
 import { prisma } from "./index"
 
-
-export async function createTransaction(hash: string, amount: string, customerId: string) {
+export async function createTransaction(hash: string, amount: string, customerId: string, productId: string, timestamp: Date) {
   try {
     const newTransaction = await prisma.transaction.create({
       data: {
         hash,
         amount,
         customerId,
+        productId,
+        timestamp: timestamp
       },
     });
     return newTransaction;
