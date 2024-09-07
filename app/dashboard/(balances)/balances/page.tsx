@@ -1,30 +1,35 @@
 "use client";
-
+import { useUserStore } from "@/lib/store";
 import { BASE_USDC_ADDRESS } from "@/lib/utils";
 import { Button, Card, CardBody, CardHeader, Divider } from "@nextui-org/react";
-import { usePrivy } from "@privy-io/react-auth";
 import { useEffect, useState } from "react";
-import { erc20Abi, formatUnits } from "viem";
-import { usePublicClient } from "wagmi";
+import { createPublicClient, erc20Abi, formatUnits, http } from "viem";
+import { base } from "viem/chains";
 
 export default function BalancesPage() {
   const [usdBalance, setUsdBalance] = useState(0);
   const [loading, setLoading] = useState(false);
-  const publicClient = usePublicClient();
-  const { user } = usePrivy();
+  const currentUser = useUserStore((state) => state.currentUser);
 
   useEffect(() => {
-    if (user) fetchBalance();
-  }, [user]);
+    if (currentUser) fetchBalance();
+  }, [currentUser]);
 
   const fetchBalance = async () => {
     setLoading(true);
     try {
+      const publicClient = createPublicClient({
+        chain: base,
+        transport: http(),
+      });
       const usdcBalance = await publicClient?.readContract({
         abi: erc20Abi,
         address: BASE_USDC_ADDRESS,
         functionName: "balanceOf",
-        args: [user?.wallet?.address! as `0x${string}`],
+        args: [
+          currentUser?.smartAccountAddress ||
+            (currentUser?.address! as `0x${string}`),
+        ],
       });
 
       if (usdcBalance) {
@@ -52,7 +57,7 @@ export default function BalancesPage() {
         <Card>
           <CardHeader className="pb-1">EUR</CardHeader>
           <CardBody className="text-lg font-bold pt-0">
-            €{usdBalance.toFixed(2)}
+            €{(usdBalance * 0.9).toFixed(2)}
           </CardBody>
         </Card>
       </div>

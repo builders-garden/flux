@@ -94,7 +94,7 @@ export default function PayPage({
           abi: erc20Abi,
           address: tokenAddress,
           functionName: "transfer",
-          args: [paymentLink?.user.address!, tokenAmount],
+          args: [paymentLink?.user.smartAccountAddress!, tokenAmount],
         });
 
         if (txHash) {
@@ -121,7 +121,7 @@ export default function PayPage({
         // call lifi
         const lifiRoute = await getRoutesResult(
           address!,
-          paymentLink?.user.address!,
+          paymentLink?.user.smartAccountAddress!,
           parseInt(chainId),
           tokenAddress,
           tokenAmount.toString()

@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 
 export default function Home() {
   const router = useRouter();
-  const { smartAccountClient, predictSmartAccountAddress } = usePimlico();
+  const { predictSmartAccountAddress } = usePimlico();
   const { login } = useLogin({
     onComplete: async (user, isNewUser) => {
       if (isNewUser) {
