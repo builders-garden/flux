@@ -27,6 +27,9 @@ export async function updateUser(
     email?: string;
     smartAccountAddress?: string;
     fullName?: string;
+    companyName?: string;
+    companyUrl?: string;
+    companyImage?: string;
   }
 ) {
   try {
