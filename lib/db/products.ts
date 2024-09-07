@@ -7,7 +7,6 @@ export async function createProduct(
   description: string,
   imageUrl: string,
   price: number,
-  paymentMethod: boolean, //true if it's a recurring, false if it's a one-off payment
   userId: string
 ) {
   try {
@@ -17,7 +16,6 @@ export async function createProduct(
         description,
         imageUrl,
         price: new Prisma.Decimal(price),
-        paymentMethod,
         userId,
       },
     });
@@ -38,7 +36,6 @@ export async function updateProduct(
     description?: string;
     imageUrl?: string;
     price?: number;
-    paymentMethod?: boolean;
     userId?: string;
   }
 ) {
