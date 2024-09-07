@@ -1,4 +1,5 @@
 export const USDC_BASE_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+export const LIFI_DIAMOND_PROXY = "0x1231deb6f5749ef6ce6943a275a1d3e7486f4eae"; //on most chains
 
 export interface Token {
   symbol: string;
@@ -182,4 +183,50 @@ export const TOKENS: Token[] = [
   },
 ];
 
-export const LIFI_DIAMOND_PROXY = "0x1231deb6f5749ef6ce6943a275a1d3e7486f4eae";
+export interface RecurringPayment {
+  contractAddress: string;
+  chainId: number;
+  chainName: string;
+  tokenAddress: string;
+  tokenSymbol: string;
+  tokenDecimals: number;
+}
+
+export const RECURRING_PAYMENTS: RecurringPayment[] = [
+  // Sei (Chain ID: 1329)
+  {
+    contractAddress: "0xea6f7e3978ae26798c1d508957EAAD439bbeF5f4",
+    chainId: 1329,
+    chainName: "Sei",
+    tokenAddress: "0x3894085Ef7Ff0f0aeDf52E2A2704928d1Ec074F1",
+    tokenSymbol: "USDC",
+    tokenDecimals: 6,
+  },
+  // Mantle (Chain ID: 5000)
+  {
+    contractAddress: "0xea6f7e3978ae26798c1d508957EAAD439bbeF5f4",
+    chainId: 5000,
+    chainName: "Mantle",
+    tokenAddress: "0x09Bc4E0D864854c6aFB6eB9A9cdF58aC190D0dF9",
+    tokenSymbol: "USDC",
+    tokenDecimals: 6,
+  },
+  // Celo (Chain ID: 42220)
+  {
+    contractAddress: "0xF69671827C264d9A6E7CF30970015c3692Fc1d97",
+    chainId: 42220,
+    chainName: "Celo",
+    tokenAddress: "0x765DE816845861e75A25fCA122bb6898B8B1282a",
+    tokenSymbol: "cUSD",
+    tokenDecimals: 18,
+  },
+  // Base (Chain ID: 8453)
+  {
+    contractAddress: "0x1ee31c573296354aE74728035b276Bc44681bbcA",
+    chainId: 8453,
+    chainName: "Base",
+    tokenAddress: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    tokenSymbol: "USDC",
+    tokenDecimals: 6,
+  },
+];
