@@ -3,6 +3,9 @@
 import { NextUIProvider } from "@nextui-org/react";
 import React from "react";
 import { PrivyProvider } from "@privy-io/react-auth";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -19,7 +22,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
           },
         }}
       >
-        <main className="h-full">{children}</main>
+        <QueryClientProvider client={queryClient}>
+          <main className="h-full">{children}</main>
+        </QueryClientProvider>
       </PrivyProvider>
     </NextUIProvider>
   );

@@ -15,7 +15,7 @@ import {
   DropdownMenu,
   DropdownTrigger,
 } from "@nextui-org/react";
-import { columns, links } from "./data";
+import { columns } from "./data";
 import {
   ClipboardCopyIcon,
   MoreVerticalIcon,
@@ -27,7 +27,7 @@ import {
 
 const INITIAL_VISIBLE_COLUMNS = ["name", "product", "creationDate", "actions"];
 
-export default function LinksTable() {
+export default function LinksTable({ links }: { links: any[] }) {
   const [filterValue, setFilterValue] = React.useState("");
   const [visibleColumns] = React.useState(new Set(INITIAL_VISIBLE_COLUMNS));
   const [statusFilter] = React.useState("all");

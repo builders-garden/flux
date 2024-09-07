@@ -16,7 +16,7 @@ import {
   DropdownMenu,
   DropdownTrigger,
 } from "@nextui-org/react";
-import { columns, products } from "./data";
+import { columns } from "./data";
 import {
   BoxIcon,
   CopyIcon,
@@ -29,7 +29,7 @@ import {
 
 const INITIAL_VISIBLE_COLUMNS = ["name", "price", "creationDate", "actions"];
 
-export default function ProductsTable() {
+export default function ProductsTable({ products }: { products: any[] }) {
   const [filterValue, setFilterValue] = React.useState("");
   const [visibleColumns] = React.useState(new Set(INITIAL_VISIBLE_COLUMNS));
   const [statusFilter] = React.useState("all");

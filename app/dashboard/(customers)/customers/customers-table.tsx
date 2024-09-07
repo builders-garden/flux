@@ -12,13 +12,13 @@ import {
   Pagination,
   Avatar,
 } from "@nextui-org/react";
-import { columns, users } from "./data";
+import { columns } from "./data";
 import { SearchIcon } from "lucide-react";
 import { shortenAddress } from "@/lib/utils";
 
 const INITIAL_VISIBLE_COLUMNS = ["address", "creationDate", "numTransactions"];
 
-export default function CustomersTable() {
+export default function CustomersTable({ users }: { users: any[] }) {
   const [filterValue, setFilterValue] = React.useState("");
   const [visibleColumns] = React.useState(new Set(INITIAL_VISIBLE_COLUMNS));
   const [statusFilter] = React.useState("all");
