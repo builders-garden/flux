@@ -116,8 +116,11 @@ export default function DashboardLayout({
         </div>
         <div className="p-4 flex flex-row space-x-8 w-full h-full">
           <nav className="flex flex-col space-y-2 max-w-[200px] flex-shrink-0 border-r-1 pr-8 min-h-full">
-            {menuItems.map((menuItem) => (
-              <Skeleton className="bg-gray-300 w-[144px] h-10 rounded-lg" />
+            {menuItems.map((menuItem, index) => (
+              <Skeleton
+                key={"menu-item-" + index}
+                className="bg-gray-300 w-[144px] h-10 rounded-lg"
+              />
             ))}
           </nav>
         </div>
