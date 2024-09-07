@@ -4,7 +4,7 @@ import { uploadImage } from "@/lib/imagekit";
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (req: NextRequest) => {
-  const address = req.headers.get("address")!;
+  const address = req.headers.get("x-address")!;
   const user = await getUserByAddress(address);
   if (!user) {
     return NextResponse.json({ message: "User not found" }, { status: 404 });
@@ -38,7 +38,7 @@ export const POST = async (req: NextRequest) => {
 };
 
 export const GET = async (req: NextRequest) => {
-  const address = req.headers.get("address")!;
+  const address = req.headers.get("x-address")!;
   const user = await getUserByAddress(address);
   if (!user) {
     return NextResponse.json({ message: "User not found" }, { status: 404 });
