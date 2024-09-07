@@ -35,8 +35,7 @@ export const POST = async (req: NextRequest) => {
         name: webhook.name,
         event: webhook.event,
       },
-      signature,
-      data,
+      payload,
     }),
   });
 
