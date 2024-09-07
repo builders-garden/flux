@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getPaymentLinkBySlug } from "@/lib/db/paymentLinks";
 
-export const GET = async (req: NextRequest) => {
+export const GET = async (req: NextRequest, { params: {slug} }: { params: { slug: string } }) => {
   const { searchParams } = new URL(req.url);
-  const slug = searchParams.get("slug");
   if (!slug) {
     return NextResponse.json({ error: "Slug is required" }, { status: 400 });
   }
