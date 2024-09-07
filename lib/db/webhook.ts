@@ -37,7 +37,11 @@ export async function getWebhookById(id: string, userId: string) {
     const webhook = await prisma.webhook.findUnique({
       where: { id, userId },
       include: {
-        eventLogs: true,
+        eventLogs: {
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
       },
     });
     return webhook;

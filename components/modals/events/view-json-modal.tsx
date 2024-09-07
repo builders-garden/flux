@@ -5,6 +5,7 @@ import {
   ModalBody,
   ModalFooter,
   Button,
+  ModalHeader,
 } from "@nextui-org/react";
 
 export default function ViewJsonModal({
@@ -22,7 +23,7 @@ export default function ViewJsonModal({
       <ModalContent>
         {(onClose) => (
           <>
-            {/* <ModalHeader className="flex flex-col gap-1">View JSON</ModalHeader> */}
+            <ModalHeader className="flex flex-col gap-1">View JSON</ModalHeader>
             <ModalBody>
               <div className="bg-gray-300 rounded-lg p-2 max-h-[300px] overflow-y-scroll">
                 <p>
