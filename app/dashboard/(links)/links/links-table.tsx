@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { Key } from "react";
 import {
   Table,
   TableHeader,
@@ -31,6 +31,7 @@ import {
 import CreatePaymentLinkModal from "@/components/modals/payment-links/create-payment-link-modal";
 import DeletePaymentLinkModal from "@/components/modals/payment-links/delete-payment-link-modal";
 import { usePaymentLinksStore } from "@/lib/store";
+import { PaymentLink, Product, User } from "@prisma/client";
 
 const INITIAL_VISIBLE_COLUMNS = [
   "name",
@@ -42,11 +43,16 @@ const INITIAL_VISIBLE_COLUMNS = [
   "actions",
 ];
 
+type PaymentLinkWithUserAndProduct = PaymentLink & {
+  user: User;
+  product: Product;
+};
+
 export default function LinksTable({
   links,
   refetch,
 }: {
-  links: any[];
+  links: PaymentLinkWithUserAndProduct[];
   refetch: () => void;
 }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -93,84 +99,97 @@ export default function LinksTable({
     return filteredItems.slice(start, end);
   }, [page, filteredItems, rowsPerPage]);
 
-  const renderCell = React.useCallback((paymentLink: any, columnKey: any) => {
-    const cellValue = paymentLink[columnKey];
-    console.log(paymentLink);
-    switch (columnKey) {
-      case "name":
-        return <span className="font-bold">{cellValue}</span>;
-      case "requiresWorldId":
-        return cellValue ? (
-          <CheckCircle2Icon className="text-emerald-500" />
-        ) : (
-          <XCircleIcon className="text-red-500" />
-        );
-      case "slug":
-        return (
-          <Chip
-            className="cursor-pointer"
-            onClick={() => {
-              if (navigator && navigator.clipboard) {
-                navigator.clipboard.writeText(
-                  `http://localhost:3000/pay/${paymentLink.slug}`
-                );
-              }
-            }}
-            color="primary"
-            size="sm"
-          >
-            {cellValue}
-          </Chip>
-        );
-      case "product":
-        return paymentLink.product.name;
-      case "actions":
-        return (
-          <Dropdown>
-            <DropdownTrigger>
-              <Button isIconOnly variant="light" size="sm">
-                <MoreVerticalIcon size={14} />
-              </Button>
-            </DropdownTrigger>
-            <DropdownMenu aria-label="Static Actions">
-              <DropdownItem
-                startContent={<ClipboardCopyIcon size={14} />}
-                key="clipboard"
-                onClick={() => {
-                  if (navigator && navigator.clipboard) {
-                    navigator.clipboard.writeText(
-                      `https://localhost:3000/pay/${paymentLink.slug}`
-                    );
-                  }
-                }}
-              >
-                Copy to clipboard
-              </DropdownItem>
-              <DropdownItem startContent={<PencilIcon size={14} />} key="edit">
-                Edit
-              </DropdownItem>
-              <DropdownItem
-                startContent={<Trash2Icon size={14} />}
-                key="delete"
-                className="text-danger"
-                color="danger"
-                onClick={() => {
-                  setDeletePaymentLink(paymentLink);
-                  onDeleteModalOpen();
-                }}
-              >
-                Delete
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
-        );
-      default:
+  const renderCell = React.useCallback(
+    (
+      paymentLink: PaymentLink & { user: User; product: Product },
+      columnKey: Key
+    ) => {
+      // @ts-expect-error - Fix this
+      const cellValue = paymentLink[columnKey];
+      console.log(paymentLink);
+      if (cellValue instanceof Date) {
         return cellValue;
-    }
-  }, []);
+      }
+      switch (columnKey) {
+        case "name":
+          return <span className="font-bold">{cellValue}</span>;
+        case "requiresWorldId":
+          return cellValue ? (
+            <CheckCircle2Icon className="text-emerald-500" />
+          ) : (
+            <XCircleIcon className="text-red-500" />
+          );
+        case "slug":
+          return (
+            <Chip
+              className="cursor-pointer bg-blue-400 text-white font-bold"
+              onClick={() => {
+                if (navigator && navigator.clipboard) {
+                  navigator.clipboard.writeText(
+                    `http://localhost:3000/pay/${paymentLink.slug}`
+                  );
+                }
+              }}
+              size="sm"
+            >
+              {cellValue}.fluxlink.eth
+            </Chip>
+          );
+        case "product":
+          return paymentLink.product.name;
+        case "actions":
+          return (
+            <Dropdown>
+              <DropdownTrigger>
+                <Button isIconOnly variant="light" size="sm">
+                  <MoreVerticalIcon size={14} />
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu aria-label="Static Actions">
+                <DropdownItem
+                  startContent={<ClipboardCopyIcon size={14} />}
+                  key="clipboard"
+                  onClick={() => {
+                    if (navigator && navigator.clipboard) {
+                      navigator.clipboard.writeText(
+                        `https://localhost:3000/pay/${paymentLink.slug}`
+                      );
+                    }
+                  }}
+                >
+                  Copy to clipboard
+                </DropdownItem>
+                <DropdownItem
+                  startContent={<PencilIcon size={14} />}
+                  key="edit"
+                >
+                  Edit
+                </DropdownItem>
+                <DropdownItem
+                  startContent={<Trash2Icon size={14} />}
+                  key="delete"
+                  className="text-danger"
+                  color="danger"
+                  onClick={() => {
+                    setDeletePaymentLink(paymentLink);
+                    onDeleteModalOpen();
+                  }}
+                >
+                  Delete
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          );
+        default:
+          return cellValue;
+      }
+    },
+    []
+  );
 
   const onRowsPerPageChange = React.useCallback((e: unknown) => {
-    setRowsPerPage(Number((e as any).target.value));
+    // @ts-expect-error - Fix this
+    setRowsPerPage(Number(e.target.value));
     setPage(1);
   }, []);
 

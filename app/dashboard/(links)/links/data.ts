@@ -1,7 +1,7 @@
 const columns = [
   { name: "ID", uid: "id" },
   { name: "NAME", uid: "name" },
-  { name: "SLUG", uid: "slug" },
+  { name: "ENS", uid: "slug" },
   { name: "PRODUCT", uid: "product" },
   { name: "CREATION DATE", uid: "createdAt" },
   { name: "WORLD ID", uid: "requiresWorldId" },

@@ -1,4 +1,5 @@
 import { useProducts } from "@/hooks";
+import { nameToSlug } from "@/lib/utils";
 import {
   Modal,
   ModalContent,
@@ -33,13 +34,13 @@ export default function CreatePaymentLinkModal({
   const [loading, setLoading] = useState<boolean>(false);
   const [name, setName] = useState<string>("");
   const [requiresWorldId, setRequiresWorldId] = useState<boolean>(true);
-  const [selectedProduct, setSelectedProduct] = useState<any>(new Set([]));
+  const [selectedProduct, setSelectedProduct] = useState(new Set([]));
   const [redirectUrl, setRedirectUrl] = useState<string>("");
 
   const createPaymentLink = async (onClose: () => void) => {
     setLoading(true);
     try {
-      const productId = (selectedProduct as Set<any>).values().next().value;
+      const productId = selectedProduct.values().next().value;
 
       await fetch("/api/payment-links", {
         method: "POST",
@@ -88,6 +89,24 @@ export default function CreatePaymentLinkModal({
                 value={name}
                 onValueChange={setName}
               />
+              {name && (
+                <p className="text-sm">
+                  Your{" "}
+                  <span
+                    className="text-blue-400 font-bold hover:underline cursor-pointer"
+                    onClick={() => {
+                      typeof window !== undefined &&
+                        window.open("https://ens.domains/", "_blank");
+                    }}
+                  >
+                    ENS
+                  </span>{" "}
+                  domain will be:{" "}
+                  <span className="font-bold">
+                    {nameToSlug(name)}.fluxlink.eth
+                  </span>
+                </p>
+              )}
               {products && (
                 <Select
                   items={products}
@@ -96,6 +115,7 @@ export default function CreatePaymentLinkModal({
                   placeholder="Select a product"
                   labelPlacement="outside"
                   selectedKeys={selectedProduct}
+                  // @ts-expect-error - Ignore this
                   onSelectionChange={setSelectedProduct}
                   isRequired
                 >

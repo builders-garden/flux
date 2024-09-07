@@ -3,6 +3,7 @@ import {
   getPaymentLinkBySlug,
   getPaymentLinksByUser,
 } from "@/lib/db/paymentLinks";
+import { createRecord } from "@/lib/db/records";
 import { getUserByAddress } from "@/lib/db/users";
 import { nameToSlug } from "@/lib/utils";
 import { NextRequest, NextResponse } from "next/server";
@@ -42,7 +43,16 @@ export const POST = async (req: NextRequest) => {
     );
   }
 
-  const paymentLink = await createPaymentLink(user.id, productId, name, slug, requiresWorldId, redirectUrl);
+  const paymentLink = await createPaymentLink(
+    user.id,
+    productId,
+    name,
+    slug,
+    requiresWorldId,
+    redirectUrl
+  );
+
+  await createRecord(slug, address);
 
   return NextResponse.json(paymentLink);
 };

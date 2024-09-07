@@ -1,5 +1,4 @@
-import { prisma } from "./index"
-
+import { prisma } from "./index";
 
 export async function createPaymentLink(
   userId: string,
@@ -20,9 +19,10 @@ export async function createPaymentLink(
         redirectUrl,
       },
     });
+
     return newPaymentLink;
   } catch (error) {
-    console.error('Error creating payment link:', error);
+    console.error("Error creating payment link:", error);
     throw error;
   } finally {
     await prisma.$disconnect();
@@ -45,7 +45,7 @@ export async function updatePaymentLink(
     });
     return updatedPaymentLink;
   } catch (error) {
-    console.error('Error updating payment link:', error);
+    console.error("Error updating payment link:", error);
     throw error;
   } finally {
     await prisma.$disconnect();
@@ -63,7 +63,7 @@ export async function getPaymentLink(id: string) {
     });
     return paymentLink;
   } catch (error) {
-    console.error('Error fetching payment link:', error);
+    console.error("Error fetching payment link:", error);
     throw error;
   } finally {
     await prisma.$disconnect();
@@ -80,7 +80,7 @@ export async function getPaymentLinksByUser(userId: string) {
     });
     return paymentLinks;
   } catch (error) {
-    console.error('Error fetching payment links by user:', error);
+    console.error("Error fetching payment links by user:", error);
     throw error;
   } finally {
     await prisma.$disconnect();
@@ -97,20 +97,26 @@ export async function getPaymentLinksByProduct(productId: string) {
     });
     return paymentLinks;
   } catch (error) {
-    console.error('Error fetching payment links by product:', error);
+    console.error("Error fetching payment links by product:", error);
     throw error;
   } finally {
     await prisma.$disconnect();
   }
 }
 
-export async function deletePaymentLink(id: string) {
+export async function deletePaymentLink(id: string, slug: string) {
   try {
+    await prisma.record.delete({
+      where: {
+        name: `${slug}.fluxlink.eth`,
+      },
+    });
+
     await prisma.paymentLink.delete({
       where: { id },
     });
   } catch (error) {
-    console.error('Error deleting payment link:', error);
+    console.error("Error deleting payment link:", error);
     throw error;
   } finally {
     await prisma.$disconnect();
@@ -128,7 +134,7 @@ export async function getPaymentLinkBySlug(slug: string) {
     });
     return paymentLink;
   } catch (error) {
-    console.error('Error fetching payment link:', error);
+    console.error("Error fetching payment link:", error);
     throw error;
   } finally {
     await prisma.$disconnect();

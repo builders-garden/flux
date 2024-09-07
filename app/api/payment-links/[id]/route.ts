@@ -70,7 +70,7 @@ export const DELETE = async (
     );
   }
 
-  const deletedPaymentLink = await deletePaymentLink(id);
+  const deletedPaymentLink = await deletePaymentLink(id, paymentLink.slug);
 
   return NextResponse.json(deletedPaymentLink);
 };
