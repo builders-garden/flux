@@ -28,7 +28,14 @@ export const POST = async (req: NextRequest) => {
       "Content-Type": "application/json",
       "x-flux-signature": signature,
     },
-    body: JSON.stringify(data),
+    body: JSON.stringify({
+      metadata: {
+        id: webhook.id,
+        name: webhook.name,
+        event: webhook.event,
+      },
+      data,
+    }),
   });
 
   let status: WebhookEventLogStatus = WebhookEventLogStatus.UNKNOWN;
