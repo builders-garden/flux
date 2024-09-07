@@ -1,6 +1,5 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from "./index"
 
-const prisma = new PrismaClient();
 
 export async function createPaymentLink(
   userId: string,
