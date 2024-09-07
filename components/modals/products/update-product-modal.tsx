@@ -8,7 +8,10 @@ import {
   ModalFooter,
   Button,
   Input,
+  Select,
+  SelectItem,
 } from "@nextui-org/react";
+import { PaymentMethod } from "@prisma/client";
 import { usePrivy } from "@privy-io/react-auth";
 import {
   PackageIcon,
@@ -17,6 +20,11 @@ import {
   UploadCloudIcon,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+
+type Method = {
+  id: PaymentMethod;
+  name: string;
+};
 
 export default function UpdateProductModal({
   isOpen,
@@ -41,6 +49,9 @@ export default function UpdateProductModal({
   const [productPrice, setProductPrice] = useState<string>(
     product?.price.toString() || "0"
   );
+  const [selectedMethod, setSelectedMethod] = useState(
+    product?.paymentMethod ? new Set([product?.paymentMethod]) : new Set([])
+  );
 
   const updateProduct = async (onClose: () => void) => {
     setLoading(true);
@@ -49,6 +60,8 @@ export default function UpdateProductModal({
       formData.append("name", productName);
       formData.append("description", productDescription);
       formData.append("price", productPrice);
+      const method = selectedMethod.values().next().value;
+      formData.append("paymentMethod", method);
       if (imageFile) {
         formData.append("files[0]", imageFile);
       }
@@ -143,6 +156,34 @@ export default function UpdateProductModal({
                 value={productPrice}
                 onValueChange={setProductPrice}
               />
+              <Select
+                items={[
+                  {
+                    id: PaymentMethod.ONE_TIME,
+                    name: "One time payment",
+                  },
+                  {
+                    id: PaymentMethod.RECURRING,
+                    name: "Each month",
+                  },
+                ]}
+                // label="Assigned to"
+                variant="bordered"
+                placeholder="Select payment type"
+                labelPlacement="outside"
+                selectedKeys={selectedMethod}
+                // @ts-expect-error - Ignore this
+                onSelectionChange={setSelectedMethod}
+                isRequired
+              >
+                {(method: Method) => (
+                  <SelectItem key={method.id} textValue={method.name}>
+                    <div className="flex gap-2 items-center">
+                      <span className="text-small">{method.name}</span>
+                    </div>
+                  </SelectItem>
+                )}
+              </Select>
             </ModalBody>
             <ModalFooter>
               <Button color="danger" variant="flat" onPress={onClose}>

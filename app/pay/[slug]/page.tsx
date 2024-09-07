@@ -54,13 +54,13 @@ export default function PayPage({
 
       console.log(amount);
 
-      const tokenAmount = parseUnits(amount?.toString()!, 18);
+      const tokenAmount = parseUnits(amount?.toString()!, parseInt(decimals));
 
       console.log(tokenAmount);
 
       const isBaseUSDC =
-        tokenAddress.toLowerCase() !== BASE_USDC_ADDRESS.toLowerCase() &&
-        chainId !== "8453";
+        tokenAddress.toLowerCase() === BASE_USDC_ADDRESS.toLowerCase() &&
+        chainId === "8453";
 
       if (tokenAddress !== "0x0000000000000000000000000000000000000000") {
         const allowance = await publicClient?.readContract({
@@ -90,6 +90,33 @@ export default function PayPage({
 
       if (isBaseUSDC) {
         // perform a transfer
+        const txHash = await walletClient?.writeContract({
+          abi: erc20Abi,
+          address: tokenAddress,
+          functionName: "transfer",
+          args: [paymentLink?.user.address!, tokenAmount],
+        });
+
+        if (txHash) {
+          const txReceipt = await publicClient?.waitForTransactionReceipt({
+            hash: txHash,
+          });
+
+          await fetch("/api/public/transactions", {
+            method: "POST",
+            body: JSON.stringify({
+              userId: paymentLink?.user.id,
+              productId: paymentLink?.product.id,
+              hash: txReceipt?.transactionHash,
+              amount: paymentLink?.product.price,
+              fromAddress: address,
+              timestamp: new Date().toISOString(),
+            }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+        }
       } else {
         // call lifi
         const lifiRoute = await getRoutesResult(
@@ -179,7 +206,8 @@ export default function PayPage({
             $
             {parseFloat(paymentLink?.product.price.toString() || "0").toFixed(
               2
-            )}
+            )}{" "}
+            {paymentLink?.product.paymentMethod === "RECURRING" && "/ month"}
           </h2>
         </div>
         <div className="col-span-2 bg-white p-4 h-full flex flex-col items-center justify-center w-full max-w-md mx-auto space-y-4">
@@ -258,7 +286,9 @@ export default function PayPage({
                 isLoading={loading}
                 onClick={pay}
               >
-                Pay
+                {paymentLink?.product.paymentMethod === "RECURRING"
+                  ? "Subscribe"
+                  : "Pay"}
               </Button>
             </>
           )}
