@@ -137,3 +137,16 @@ export async function searchProducts(searchTerm: string) {
     await prisma.$disconnect();
   }
 }
+
+export async function deleteProduct(id: string) {
+  try {
+    await prisma.product.delete({
+      where: { id },
+    });
+  } catch (error) {
+    console.error('Error deleting product:', error);
+    throw error;
+  } finally {
+    await prisma.$disconnect();
+  }
+}

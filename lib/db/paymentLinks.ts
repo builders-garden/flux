@@ -94,3 +94,16 @@ export async function getPaymentLinksByProduct(productId: string) {
     await prisma.$disconnect();
   }
 }
+
+export async function deletePaymentLink(id: string) {
+  try {
+    await prisma.paymentLink.delete({
+      where: { id },
+    });
+  } catch (error) {
+    console.error('Error deleting payment link:', error);
+    throw error;
+  } finally {
+    await prisma.$disconnect();
+  }
+}
