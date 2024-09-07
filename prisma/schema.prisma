@@ -41,7 +41,9 @@ model Product {
 
 model PaymentLink {
   id          String   @id @default(uuid())
-  link        String
+  name        String
+  slug        String   @unique
+  requiresWorldId Boolean @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   userId      String
