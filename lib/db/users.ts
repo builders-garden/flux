@@ -1,22 +1,19 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 //Create User entry in DB
-export async function createUser(
-  address: string,
-  email: string,
-) {
+export async function createUser(address: string, email: string) {
   try {
     const newUser = await prisma.user.create({
       data: {
-        address,
+        address: address.toLowerCase(),
         email,
       },
     });
     return newUser;
   } catch (error) {
-    console.error('Error creating user:', error);
+    console.error("Error creating user:", error);
     throw error;
   } finally {
     await prisma.$disconnect();
@@ -39,7 +36,7 @@ export async function updateUser(
     });
     return updatedUser;
   } catch (error) {
-    console.error('Error updating user:', error);
+    console.error("Error updating user:", error);
     throw error;
   } finally {
     await prisma.$disconnect();
@@ -57,7 +54,7 @@ export async function getUserWithRelations(userId: string) {
     });
     return user;
   } catch (error) {
-    console.error('Error fetching user with relations:', error);
+    console.error("Error fetching user with relations:", error);
     throw error;
   } finally {
     await prisma.$disconnect();
@@ -75,7 +72,25 @@ export async function getUserById(id: string) {
     });
     return user;
   } catch (error) {
-    console.error('Error fetching user:', error);
+    console.error("Error fetching user:", error);
+    throw error;
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
+export async function getUserByAddress(address: string) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { address },
+      include: {
+        products: true,
+        paymentLinks: true,
+      },
+    });
+    return user;
+  } catch (error) {
+    console.error("Error fetching user by email:", error);
     throw error;
   } finally {
     await prisma.$disconnect();
@@ -93,7 +108,7 @@ export async function getUserByEmail(email: string) {
     });
     return user;
   } catch (error) {
-    console.error('Error fetching user by email:', error);
+    console.error("Error fetching user by email:", error);
     throw error;
   } finally {
     await prisma.$disconnect();
@@ -103,7 +118,7 @@ export async function getUserByEmail(email: string) {
 export async function getAllUsers(
   page: number = 1,
   pageSize: number = 10,
-  orderBy: 'asc' | 'desc' = 'desc'
+  orderBy: "asc" | "desc" = "desc"
 ) {
   try {
     const users = await prisma.user.findMany({
@@ -123,7 +138,7 @@ export async function getAllUsers(
     });
     return users;
   } catch (error) {
-    console.error('Error fetching all users:', error);
+    console.error("Error fetching all users:", error);
     throw error;
   } finally {
     await prisma.$disconnect();
@@ -135,9 +150,11 @@ export async function searchUsers(searchTerm: string) {
     const users = await prisma.user.findMany({
       where: {
         OR: [
-          { email: { contains: searchTerm, mode: 'insensitive' } },
-          { address: { contains: searchTerm, mode: 'insensitive' } },
-          { smartAccountAddress: { contains: searchTerm, mode: 'insensitive' } },
+          { email: { contains: searchTerm, mode: "insensitive" } },
+          { address: { contains: searchTerm, mode: "insensitive" } },
+          {
+            smartAccountAddress: { contains: searchTerm, mode: "insensitive" },
+          },
         ],
       },
       include: {
@@ -151,7 +168,7 @@ export async function searchUsers(searchTerm: string) {
     });
     return users;
   } catch (error) {
-    console.error('Error searching users:', error);
+    console.error("Error searching users:", error);
     throw error;
   } finally {
     await prisma.$disconnect();
