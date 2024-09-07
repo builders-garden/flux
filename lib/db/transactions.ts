@@ -8,7 +8,7 @@ export async function createTransaction(hash: string, amount: string, customerId
         amount,
         customerId,
         productId,
-        timestamp: timestamp
+        timestamp
       },
     });
     return newTransaction;
