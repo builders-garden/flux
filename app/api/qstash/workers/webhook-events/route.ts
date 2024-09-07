@@ -31,9 +31,10 @@ export const POST = async (req: NextRequest) => {
     },
     body: JSON.stringify({
       metadata: {
-        id: webhook.id,
-        name: webhook.name,
-        event: webhook.event,
+        webhookId: webhook.id,
+        webhookName: webhook.name,
+        eventType: webhook.event,
+        timestamp: Date.now()
       },
       payload,
     }),

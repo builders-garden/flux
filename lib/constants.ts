@@ -230,3 +230,21 @@ export const RECURRING_PAYMENTS: RecurringPayment[] = [
     tokenDecimals: 6,
   },
 ];
+
+export const WEBHOOK_EVENTS = [
+  {
+    id: "customer_created",
+    name: "Customer created",
+  },{
+    id: "payment_successful",
+    name: "Payment successful",
+  },
+  {
+    id: "subscription_created",
+    name: "Subscription created",
+  },
+  {
+    id: "subscription_cancelled",
+    name: "Subscription cancelled",
+  },
+];

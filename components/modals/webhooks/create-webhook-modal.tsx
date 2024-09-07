@@ -1,3 +1,4 @@
+import { WEBHOOK_EVENTS } from "@/lib/constants";
 import {
   Modal,
   ModalContent,
@@ -96,16 +97,7 @@ export default function CreateWebhookModal({
                 isRequired
               />
               <Select
-                items={[
-                  {
-                    id: "customer-created",
-                    name: "Customer created",
-                  },
-                  {
-                    id: "payment-successful",
-                    name: "Payment successful",
-                  },
-                ]}
+                items={WEBHOOK_EVENTS}
                 // label="Assigned to"
                 variant="bordered"
                 placeholder="Select an event"
