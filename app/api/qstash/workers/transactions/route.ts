@@ -49,7 +49,7 @@ export const POST = async (req: NextRequest) => {
 
   await relayWebhookEvent({
     webhookId: transaction.id,
-    data: transaction,
+    payload: transaction,
   });
 
   return NextResponse.json(transaction);

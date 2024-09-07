@@ -3,7 +3,7 @@ import { prisma } from ".";
 
 export const createWebhookEventLog = async (data: {
   webhookId: string;
-  data: Prisma.InputJsonValue;
+  payload: Prisma.InputJsonValue;
   status: WebhookEventLogStatus;
   statusCode: number;
   response: Prisma.InputJsonValue;

@@ -5,7 +5,8 @@ import { createPrivateKey, sign } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (req: NextRequest) => {
-  const { webhookId, data } = await req.json();
+  const { data } = await req.json();
+  const { webhookId, payload } = data;
   const webhook = await getWebhookById(webhookId);
 
   if (!webhook) {
@@ -19,7 +20,7 @@ export const POST = async (req: NextRequest) => {
   const privateKey = createPrivateKey(process.env.WEBHOOK_EVENTS_PRIVATE_KEY!);
   const signature = sign(
     "sha256",
-    Buffer.from(JSON.stringify({ url: webhook.url, data })),
+    Buffer.from(JSON.stringify({ url: webhook.url, payload })),
     privateKey
   ).toString("base64");
   const response = await fetch(webhook.url, {
@@ -62,7 +63,7 @@ export const POST = async (req: NextRequest) => {
   const responseBody = await response.json();
   await createWebhookEventLog({
     webhookId,
-    data,
+    payload,
     status,
     statusCode: response.status,
     response: responseBody,
