@@ -12,3 +12,73 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id                 String        @id @default(uuid())
+  fullName           String?
+  address            String        @unique
+  email              String        @unique
+  smartAccountAddress String? 
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  products           Product[]
+  paymentLinks       PaymentLink[]
+  customers           Customer[]
+}
+
+model Product {
+  id               String        @id @default(uuid())
+  name             String
+  description      String
+  imageUrl         String
+  price            Decimal       @db.Decimal(10, 2)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  userId           String
+  user             User          @relation(fields: [userId], references: [id])
+  paymentLinks     PaymentLink[]
+}
+
+model PaymentLink {
+  id          String   @id @default(uuid())
+  link        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id])
+}
+
+model Webhook {
+  id        String   @id @default(uuid())
+  name      String
+  url       String
+  event     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Transaction {
+  id         String   @id @default(uuid())
+  hash       String   @unique
+  amount     String  
+  timestamp  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  customerId String
+  productId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+}
+
+model Customer {
+  id           String        @id @default(uuid())
+  address      String        @unique
+  ens          String?       @unique
+  avatar       String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  userId       String
+  user         User          @relation(fields: [userId], references: [id])
+  transactions Transaction[]
+}
