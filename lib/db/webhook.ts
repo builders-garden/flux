@@ -81,3 +81,14 @@ export async function updateWebhook(id: string, data: {name?: string, url?: stri
     await prisma.$disconnect();
   }
 }
+
+export const deleteWebhooksByUserId = async (userId: string) => {
+  try {
+    await prisma.webhook.deleteMany({
+      where: { userId },
+    });
+  } catch (error) {
+    console.error("Error deleting webhooks by user:", error);
+    throw error;
+  }
+};

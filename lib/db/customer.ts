@@ -158,3 +158,14 @@ export async function getCustomerByEns(ens: string) {
     throw error;
   }
 }
+
+export const deleteCustomerByUserId = async (userId: string) => {
+  try {
+    await prisma.customer.deleteMany({
+      where: { userId },
+    });
+  } catch (error) {
+    console.error("Error deleting customer by user:", error);
+    throw error;
+  }
+};

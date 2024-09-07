@@ -140,3 +140,14 @@ export async function deleteProduct(id: string) {
     await prisma.$disconnect();
   }
 }
+
+export const deleteProductsByUser = async (userId: string) => {
+  try {
+    await prisma.product.deleteMany({
+      where: { userId },
+    });
+  } catch (error) {
+    console.error("Error deleting products by user:", error);
+    throw error;
+  }
+};

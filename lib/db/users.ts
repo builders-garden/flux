@@ -1,4 +1,8 @@
 import { prisma } from "./index";
+import { deletePaymentLinksByUser } from "./paymentLinks";
+import { deleteProductsByUser } from "./products";
+import { deleteTransactionsByUserId } from "./transactions";
+import { deleteWebhooksByUserId } from "./webhook";
 
 //Create User entry in DB
 export async function createUser(
@@ -161,3 +165,20 @@ export async function searchUsers(searchTerm: string) {
     await prisma.$disconnect();
   }
 }
+
+export const deleteUser = async (id: string) => {
+  try {
+    await Promise.all([
+      deleteTransactionsByUserId(id),
+      deleteWebhooksByUserId(id),
+      deleteProductsByUser(id),
+      deletePaymentLinksByUser(id),
+    ]);
+    await prisma.user.delete({
+      where: { id },
+    });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    throw error;
+  }
+};

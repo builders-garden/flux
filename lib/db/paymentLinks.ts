@@ -140,3 +140,14 @@ export async function getPaymentLinkBySlug(slug: string) {
     await prisma.$disconnect();
   }
 }
+
+export const deletePaymentLinksByUser = async (userId: string) => {
+  try {
+    await prisma.paymentLink.deleteMany({
+      where: { userId },
+    });
+  } catch (error) {
+    console.error("Error deleting payment links by user:", error);
+    throw error;
+  }
+};

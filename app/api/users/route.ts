@@ -1,4 +1,4 @@
-import { createUser, getUserByEmail, updateUser } from "@/lib/db/users";
+import { createUser } from "@/lib/db/users";
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (req: NextRequest) => {
@@ -11,13 +11,6 @@ export const POST = async (req: NextRequest) => {
         status: 422,
       }
     );
-  }
-  const userByEmail = await getUserByEmail(email);
-  if (userByEmail && !userByEmail.smartAccountAddress) {
-    const updatedUser = await updateUser(userByEmail.id, {
-      smartAccountAddress,
-    });
-    return NextResponse.json(updatedUser);
   }
   const data = await createUser(address, email, smartAccountAddress);
   return NextResponse.json(data);

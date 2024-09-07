@@ -66,3 +66,14 @@ export async function getTransactionsByUserId(
     await prisma.$disconnect();
   }
 }
+
+export const deleteTransactionsByUserId = async (userId: string) => {
+  try {
+    await prisma.transaction.deleteMany({
+      where: { userId },
+    });
+  } catch (error) {
+    console.error("Error deleting transactions by user:", error);
+    throw error;
+  }
+}

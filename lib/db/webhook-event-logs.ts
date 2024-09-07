@@ -31,3 +31,14 @@ export const getWebhookEventLogs = async (queryOptions: {
     skip: offset,
   });
 };
+
+export const deleteWebhookEventLogsByWebhookId = async (webhookId: string) => {
+  try {
+    await prisma.webhookEventLog.deleteMany({
+      where: { webhookId },
+    });
+  } catch (error) {
+    console.error("Error deleting webhook event logs by user:", error);
+    throw error;
+  }
+};
