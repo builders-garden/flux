@@ -248,3 +248,12 @@ export const WEBHOOK_EVENTS = [
     name: "Subscription cancelled",
   },
 ];
+
+export const getContractAddressByChainId = (chainId: number): string | undefined => {
+  const payment = RECURRING_PAYMENTS.find(p => p.chainId === chainId);
+  return payment?.contractAddress;
+};
+export const getTokenAddressByChainId = (chainId: number): string | undefined => {
+  const payment = RECURRING_PAYMENTS.find(p => p.chainId === chainId);
+  return payment?.tokenAddress;
+};

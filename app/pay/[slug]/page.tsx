@@ -6,8 +6,22 @@ import { getRoutesResult } from "@/lib/lifi/lifi";
 import { calculateTokenAmount } from "@/lib/lifi/utils";
 import { BASE_USDC_ADDRESS, shortenAddress } from "@/lib/utils";
 import { getStepTransaction } from "@lifi/sdk";
-import { Input, Image, Button, Select, SelectItem } from "@nextui-org/react";
-import { CreditCardIcon, MailIcon, StoreIcon } from "lucide-react";
+import {
+  Input,
+  Image,
+  Button,
+  Select,
+  SelectItem,
+  Skeleton,
+} from "@nextui-org/react";
+import {
+  ArrowRightIcon,
+  CheckCircle2Icon,
+  CreditCardIcon,
+  MailIcon,
+  StoreIcon,
+} from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import { erc20Abi, parseUnits } from "viem";
 import {
@@ -23,6 +37,7 @@ export default function PayPage({
 }: {
   params: { slug: string };
 }) {
+  const [success, setSuccess] = useState<boolean>(false);
   const { isPending, paymentLink } = usePaymentLink(slug);
   const { connect } = useConnect();
   const { address } = useAccount();
@@ -160,6 +175,9 @@ export default function PayPage({
           }
         }
       }
+
+      typeof window !== "undefined" && window.open(paymentLink?.redirectUrl);
+      setSuccess(true);
     } catch (error) {
       console.error(error);
     } finally {
@@ -171,8 +189,21 @@ export default function PayPage({
     return (
       <div className="min-h-screen min-w-screen">
         <div className="grid grid-cols-4 h-screen">
-          <div className="col-span-2 bg-gray-50 p-4 h-full"></div>
-          <div className="col-span-2 bg-white p-4 h-full"></div>
+          <div className="col-span-2 bg-gray-50 p-32 h-full flex flex-col items-center justify-center space-y-2">
+            <div className="flex items-center justify-center space-x-2">
+              <Skeleton className="bg-gray-300 h-8 w-8 rounded-full" />
+              <Skeleton className="bg-gray-300 h-8 w-20 rounded-lg" />
+            </div>
+            <Skeleton className="h-[250px] *:w-[250px] rounded-lg" />
+            <Skeleton className="bg-gray-300 h-12 w-32 rounded-lg" />
+            <Skeleton className="bg-gray-300 h-10 w-40 rounded-lg" />
+            <Skeleton className="bg-gray-300 h-8 w-20 rounded-lg" />
+          </div>
+          <div className="col-span-2 bg-white p-4 h-full flex flex-col items-center justify-center w-full max-w-md mx-auto space-y-4">
+            <Skeleton className="bg-gray-300 h-12 w-full rounded-lg" />
+            <Skeleton className="bg-gray-300 h-8 w-full rounded-lg" />
+            <Skeleton className="bg-gray-300 h-10 w-full rounded-lg" />
+          </div>
         </div>
       </div>
     );
@@ -211,7 +242,7 @@ export default function PayPage({
           </h2>
         </div>
         <div className="col-span-2 bg-white p-4 h-full flex flex-col items-center justify-center w-full max-w-md mx-auto space-y-4">
-          {address && (
+          {address && !success && (
             <>
               <Input
                 autoFocus
@@ -299,6 +330,22 @@ export default function PayPage({
             >
               Connect Wallet
             </Button>
+          )}
+          {success && (
+            <>
+              <CheckCircle2Icon className="text-emerald-500" size={64} />
+              <p className="text-center text-emerald-500 text-2xl">
+                Your payment was successful!
+              </p>
+              <Button
+                color="primary"
+                as={Link}
+                startContent={<ArrowRightIcon size="14" />}
+                href={paymentLink?.redirectUrl}
+              >
+                Continue
+              </Button>
+            </>
           )}
         </div>
       </div>
