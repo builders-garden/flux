@@ -66,16 +66,25 @@ model PaymentLink {
   product     Product  @relation(fields: [productId], references: [id])
 }
 
+enum WebhookEventType {
+  PAYMENT_SUCCESSFUL
+  CUSTOMER_CREATED
+  SUBSCRIPTION_CREATED
+  SUBSCRIPTION_CANCELLED
+}
+
 model Webhook {
   id        String   @id @default(uuid())
   name      String
   url       String
-  event     String
+  eventType     WebhookEventType
   userId    String
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   eventLogs WebhookEventLog[]
+
+  @@unique([userId, eventType])
 }
 
 enum WebhookEventLogStatus {

@@ -32,7 +32,7 @@ import CreateWebhookModal from "@/components/modals/webhooks/create-webhook-moda
 const INITIAL_VISIBLE_COLUMNS = [
   "name",
   "url",
-  "event",
+  "eventType",
   "createdAt",
   "actions",
 ];
@@ -94,7 +94,7 @@ export default function WebhooksTable({
       return cellValue;
     }
     switch (columnKey) {
-      case "event":
+      case "eventType":
         return (
           <Chip color="primary" size="sm">
             {cellValue.replace("-", " ")}
