@@ -119,3 +119,18 @@ model Customer {
   user         User          @relation(fields: [userId], references: [id])
   transactions Transaction[]
 }
+
+model Record {
+  id              Int       @id @default(autoincrement())
+  
+  name            String    @unique
+  owner           String
+  addresses       Json
+  texts           Json
+  contenthash     String
+
+  createdAt       DateTime  @map("created_at") @default(now())
+  updatedAt       DateTime  @map("updated_at") @default(now())    
+
+  @@index([owner])
+}
