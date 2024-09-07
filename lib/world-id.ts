@@ -3,14 +3,21 @@ export const PRODUCT_PURCHASE_ACTION_ID = (
   paymentLinkId: string
 ) => `purchase-product-${productId}-link-${paymentLinkId}`;
 
+export const PRODUCT_PURCHASE_ACTION_NAME = (productName: string) =>
+  `Purchase Product ${productName}`;
+
+export const PRODUCT_PURCHASE_ACTION_DESCRIPTION = (productName: string) =>
+  `Verify that you didn't purchase ${productName} before`;
+
 export const createNewIncognitoAction = async (
   productId: string,
+  productName: string,
   paymentLinkId: string,
   maxVerifications: number
 ) => {
   const actionId = PRODUCT_PURCHASE_ACTION_ID(productId, paymentLinkId);
-  const actionName = `Purchase Product ${productId}`;
-  const actionDescription = `Purchase Product ${productId}`;
+  const actionName = PRODUCT_PURCHASE_ACTION_NAME(productName);
+  const actionDescription = PRODUCT_PURCHASE_ACTION_DESCRIPTION(productName);
   const response = await fetch(
     `https://developer.worldcoin.org/api/v2/create-action/${process.env.NEXT_PUBLIC_WORLDCOIN_APP_ID}`,
     {
