@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,105 +8,92 @@ datasource db {
 }
 
 model User {
-  id                 String        @id @default(uuid())
-  fullName           String?
-  address            String        @unique
-  email              String        @unique
-  smartAccountAddress String? 
-  companyName        String?
-  companyUrl         String?
-  companyImage       String? 
-  createdAt          DateTime      @default(now())
-  updatedAt          DateTime      @updatedAt
-  products           Product[]
-  paymentLinks       PaymentLink[]
+  id                  String        @id @default(uuid())
+  fullName            String?
+  address             String        @unique
+  email               String        @unique
+  smartAccountAddress String?
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+  companyName         String?
+  companyUrl          String?
+  companyImage        String?
   customers           Customer[]
+  paymentLinks        PaymentLink[]
+  products            Product[]
   transactions        Transaction[]
   webhooks            Webhook[]
 }
 
-enum PaymentMethod {
-  RECURRING
-  ONE_TIME
-}
-
 model Product {
-  id               String        @id @default(uuid())
-  name             String
-  description      String
-  imageUrl         String
-  price            Decimal       @db.Decimal(10, 2)
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
-  userId           String
-  user             User          @relation(fields: [userId], references: [id])
-  paymentMethod    PaymentMethod @default(ONE_TIME)
-  paymentLinks     PaymentLink[]
-  transactions     Transaction[]
-  subscriptions    Subscription[]
+  id            String         @id @default(uuid())
+  name          String
+  description   String
+  imageUrl      String
+  price         Decimal        @db.Decimal(10, 2)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  userId        String
+  paymentMethod PaymentMethod  @default(ONE_TIME)
+  paymentLinks  PaymentLink[]
+  user          User           @relation(fields: [userId], references: [id])
+  subscriptions Subscription[]
+  transactions  Transaction[]
 }
 
 model PaymentLink {
-  id          String   @id @default(uuid())
-  name        String
-  slug        String   @unique
-  redirectUrl String
-  requiresWorldId Boolean @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  productId   String
-  product     Product  @relation(fields: [productId], references: [id])
+  id              String   @id @default(uuid())
+  name            String
+  slug            String   @unique
+  requiresWorldId Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  userId          String
+  productId       String
+  redirectUrl     String
+  product         Product  @relation(fields: [productId], references: [id])
+  user            User     @relation(fields: [userId], references: [id])
 }
 
 model Webhook {
-  id        String   @id @default(uuid())
+  id        String            @id @default(uuid())
   name      String
   url       String
-  event     String
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  eventType WebhookEventType
+  user      User              @relation(fields: [userId], references: [id])
   eventLogs WebhookEventLog[]
-}
 
-enum WebhookEventLogStatus {
-  SUCCESS
-  BAD_REQUEST
-  UNAUTHORIZED
-  NOT_FOUND
-  INTERNAL_SERVER_ERROR
-  TIMEOUT
-  UNKNOWN
+  @@unique([userId, eventType])
 }
 
 model WebhookEventLog {
-  id        String   @id @default(uuid())
-  webhookId String
-  payload   Json
-  response  Json?
-  status WebhookEventLogStatus
+  id         String                @id @default(uuid())
+  webhookId  String
+  response   Json?
+  status     WebhookEventLogStatus
   statusCode Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  webhook   Webhook  @relation(fields: [webhookId], references: [id])
+  createdAt  DateTime              @default(now())
+  updatedAt  DateTime              @updatedAt
+  payload    Json
+  webhook    Webhook               @relation(fields: [webhookId], references: [id])
 }
 
 model Transaction {
   id         String   @id @default(uuid())
   hash       String   @unique
-  amount     String  
+  amount     String
   timestamp  DateTime
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   customerId String
-  productId String
+  productId  String
   userId     String
-  user       User     @relation(fields: [userId], references: [id])
   customer   Customer @relation(fields: [customerId], references: [id])
   product    Product  @relation(fields: [productId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
 }
 
 model Customer {
@@ -128,30 +109,50 @@ model Customer {
 }
 
 model Record {
-  id              Int       @id @default(autoincrement())
-  
-  name            String    @unique
-  owner           String
-  addresses       Json
-  texts           Json
-  contenthash     String
-
-  createdAt       DateTime  @map("created_at") @default(now())
-  updatedAt       DateTime  @map("updated_at") @default(now())    
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  owner       String
+  addresses   Json
+  texts       Json
+  contenthash String
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @map("updated_at")
 
   @@index([owner])
 }
 
 model Subscription {
-  id String @id @default(uuid())
-  subscriptionId String 
-  hash String @unique
+  id                String   @id @default(uuid())
+  subscriptionId    String
+  hash              String   @unique
   subscriberAddress String
-  merchantAddress String
-  tokenAddress String
-  interval Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  productId String
-  product Product @relation(fields: [productId], references: [id])
+  merchantAddress   String
+  tokenAddress      String
+  interval          Int
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  productId         String
+  product           Product  @relation(fields: [productId], references: [id])
+}
+
+enum PaymentMethod {
+  RECURRING
+  ONE_TIME
+}
+
+enum WebhookEventLogStatus {
+  SUCCESS
+  BAD_REQUEST
+  UNAUTHORIZED
+  NOT_FOUND
+  INTERNAL_SERVER_ERROR
+  TIMEOUT
+  UNKNOWN
+}
+
+enum WebhookEventType {
+  PAYMENT_SUCCESSFUL
+  CUSTOMER_CREATED
+  SUBSCRIPTION_CREATED
+  SUBSCRIPTION_CANCELLED
 }

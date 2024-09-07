@@ -12,6 +12,7 @@ import {
 } from "@nextui-org/react";
 import { useLogout, usePrivy } from "@privy-io/react-auth";
 import {
+  CalendarClockIcon,
   CogIcon,
   CreditCardIcon,
   HomeIcon,
@@ -57,6 +58,11 @@ const menuItems: MenuItem[] = [
     label: "Products",
     href: "/dashboard/products",
     icon: <PackageSearchIcon />,
+  },
+  {
+    label: "Subscriptions",
+    href: "/dashboard/subscriptions",
+    icon: <CalendarClockIcon />,
   },
   {
     label: "Links",

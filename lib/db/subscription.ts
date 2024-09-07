@@ -50,5 +50,12 @@ export async function getSubscriptionsByMerchantAddress(
 ) {
   return prisma.subscription.findMany({
     where: { merchantAddress },
+    include: {
+      product: {
+        include: {
+          user: true,
+        },
+      },
+    },
   });
 }
