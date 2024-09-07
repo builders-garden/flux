@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@lifi/sdk": "^3.1.5",
     "@prisma/client": "5.19.1",
     "@upstash/qstash": "^2.7.5",
     "imagekit": "^5.2.0",
