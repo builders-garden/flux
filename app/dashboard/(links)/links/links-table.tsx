@@ -126,7 +126,7 @@ export default function LinksTable({
               onClick={() => {
                 if (navigator && navigator.clipboard) {
                   navigator.clipboard.writeText(
-                    `http://localhost:3000/pay/${paymentLink.slug}`
+                    `${paymentLink.slug}.fluxlink.eth.limo`
                   );
                 }
               }}
@@ -152,7 +152,7 @@ export default function LinksTable({
                   onClick={() => {
                     if (navigator && navigator.clipboard) {
                       navigator.clipboard.writeText(
-                        `https://localhost:3000/pay/${paymentLink.slug}`
+                        `${paymentLink.slug}.fluxlink.eth.limo`
                       );
                     }
                   }}
