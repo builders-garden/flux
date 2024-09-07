@@ -115,14 +115,6 @@ export async function getAllUsers(
       orderBy: {
         createdAt: orderBy,
       },
-      include: {
-        _count: {
-          select: {
-            products: true,
-            paymentLinks: true,
-          },
-        },
-      },
     });
     return users;
   } catch (error) {
