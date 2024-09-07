@@ -90,7 +90,7 @@ enum WebhookEventLogStatus {
 model WebhookEventLog {
   id        String   @id @default(uuid())
   webhookId String
-  data      Json
+  payload   Json
   response  Json?
   status WebhookEventLogStatus
   statusCode Int

@@ -47,7 +47,7 @@ export const relayTransactionCreation = async (data: {
 
 export const relayWebhookEvent = async (data: {
   webhookId: string;
-  data: { [key: string]: unknown };
+  payload: { [key: string]: unknown };
 }) => {
   await publishToQstash(
     `${process.env.BASE_URL}/api/qstash/workers/webhook-events`,
