@@ -1,16 +1,14 @@
 import { getCustomerByAddress, createCustomer } from "@/lib/db/customer";
 import { createTransaction } from "@/lib/db/transactions";
 import { relayWebhookEvent } from "@/lib/qstash";
-import { Customer } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (req: NextRequest) => {
-  const body = await req.json();
-  const { userId, productId, hash, amount, fromAddress, timestamp } = body;
-  let customer: Customer | null;
-  try {
-    customer = await getCustomerByAddress(fromAddress);
-  } catch (e) {
+  const { data } = await req.json();
+  const { userId, productId, hash, amount, fromAddress, timestamp } = data;
+  let customer = await getCustomerByAddress(fromAddress);
+
+  if (!customer) {
     customer = await createCustomer(fromAddress, userId);
   }
 
