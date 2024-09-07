@@ -1,4 +1,8 @@
-import { createProduct, getProductsByUser } from "@/lib/db/products";
+import {
+  createProduct,
+  getProductById,
+  getProductsByUser,
+} from "@/lib/db/products";
 import { getUserByAddress } from "@/lib/db/users";
 import { uploadImage } from "@/lib/imagekit";
 import { NextRequest, NextResponse } from "next/server";
@@ -8,6 +12,26 @@ export const POST = async (req: NextRequest) => {
   const user = await getUserByAddress(address);
   if (!user) {
     return NextResponse.json({ message: "User not found" }, { status: 404 });
+  }
+
+  const { searchParams } = new URL(req.url);
+  const productId = searchParams.get("productId");
+  if (productId) {
+    const product = await getProductById(productId);
+    if (!product || product.userId !== user.id) {
+      return NextResponse.json(
+        { message: "Product to duplicate not found" },
+        { status: 404 }
+      );
+    }
+    const duplicateProduct = await createProduct(
+      `${product.name} - Copy`,
+      product.description,
+      product.imageUrl,
+      parseFloat(product.price.toString()),
+      user.id
+    );
+    return NextResponse.json(duplicateProduct);
   }
   const body = await req.formData();
   const name = body.get("name") as string;

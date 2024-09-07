@@ -60,10 +60,6 @@ export async function getProductById(id: string) {
   try {
     const product = await prisma.product.findUnique({
       where: { id },
-      include: {
-        user: true,
-        paymentLinks: true,
-      },
     });
     return product;
   } catch (error) {
@@ -78,9 +74,6 @@ export async function getProductsByUser(userId: string) {
   try {
     const products = await prisma.product.findMany({
       where: { userId },
-      include: {
-        paymentLinks: true,
-      },
     });
     return products;
   } catch (error) {
@@ -103,9 +96,6 @@ export async function getAllProducts(
       orderBy: {
         createdAt: orderBy,
       },
-      include: {
-        user: true,
-      },
     });
     return products;
   } catch (error) {
@@ -124,9 +114,6 @@ export async function searchProducts(searchTerm: string) {
           { name: { contains: searchTerm, mode: 'insensitive' } },
           { description: { contains: searchTerm, mode: 'insensitive' } },
         ],
-      },
-      include: {
-        user: true,
       },
     });
     return products;

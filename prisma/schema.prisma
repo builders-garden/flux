@@ -25,6 +25,7 @@ model User {
   paymentLinks       PaymentLink[]
   customers           Customer[]
   transactions        Transaction[]
+  webhooks            Webhook[]
 }
 
 model Product {
@@ -45,6 +46,7 @@ model PaymentLink {
   id          String   @id @default(uuid())
   name        String
   slug        String   @unique
+  redirectUrl String
   requiresWorldId Boolean @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -59,6 +61,8 @@ model Webhook {
   name      String
   url       String
   event     String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

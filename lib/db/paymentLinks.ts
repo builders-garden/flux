@@ -6,7 +6,8 @@ export async function createPaymentLink(
   productId: string,
   name: string,
   slug: string,
-  requiresWorldId: boolean
+  requiresWorldId: boolean,
+  redirectUrl: string
 ) {
   try {
     const newPaymentLink = await prisma.paymentLink.create({
@@ -16,6 +17,7 @@ export async function createPaymentLink(
         slug,
         name,
         requiresWorldId,
+        redirectUrl,
       },
     });
     return newPaymentLink;
@@ -33,6 +35,7 @@ export async function updatePaymentLink(
     name?: string;
     slug?: string;
     requiresWorldId?: boolean;
+    redirectUrl?: string;
   }
 ) {
   try {

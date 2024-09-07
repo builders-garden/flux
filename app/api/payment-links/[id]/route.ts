@@ -19,7 +19,7 @@ export const PUT = async (
   }
 
   const body = await req.json();
-  const { name, requiresWorldId } = body;
+  const { name, requiresWorldId, redirectUrl } = body;
 
   const slug = nameToSlug(name as string);
 
@@ -27,6 +27,7 @@ export const PUT = async (
     ...(name ? { name } : {}),
     ...(slug ? { slug } : {}),
     ...(requiresWorldId ? { requiresWorldId } : {}),
+    ...(redirectUrl ? { redirectUrl } : {}),
   });
 
   return NextResponse.json(paymentLink);

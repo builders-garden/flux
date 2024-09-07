@@ -29,7 +29,7 @@ export const POST = async (req: NextRequest) => {
   }
 
   const body = await req.json();
-  const { name, productId, requiresWorldId } = body;
+  const { name, productId, requiresWorldId, redirectUrl } = body;
 
   const slug = nameToSlug(name as string);
 
@@ -42,7 +42,7 @@ export const POST = async (req: NextRequest) => {
     );
   }
 
-  const paymentLink = await createPaymentLink(user.id, productId, name, slug, requiresWorldId);
+  const paymentLink = await createPaymentLink(user.id, productId, name, slug, requiresWorldId, redirectUrl);
 
   return NextResponse.json(paymentLink);
 };
