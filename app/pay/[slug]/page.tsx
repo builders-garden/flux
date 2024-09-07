@@ -36,13 +36,14 @@ export default function PayPage({
   return (
     <div className="min-h-screen min-w-screen">
       <div className="grid grid-cols-4 h-screen">
-        <div className="col-span-2 bg-gray-50 p-32 h-full flex flex-col items-center justify-center">
+        <div className="col-span-2 bg-gray-50 p-32 h-full flex flex-col items-center justify-center space-y-2">
           <div className="flex items-center space-x-2">
             <div className="rounded-full p-2 shadow-sm bg-white">
               <StoreIcon className="text-gray-400" />
             </div>
             <span className="text-sm font-semibold">
-              {shortenAddress(paymentLink?.user?.address)}
+              {paymentLink?.user?.companyName ||
+                shortenAddress(paymentLink?.user?.address)}
             </span>
           </div>
           <Image
