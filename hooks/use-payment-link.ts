@@ -3,17 +3,11 @@ import { usePrivy } from "@privy-io/react-auth";
 import { useQuery } from "@tanstack/react-query";
 
 export const usePaymentLink = (slug: string) => {
-  const { getAccessToken } = usePrivy();
   const { isPending, error, data, refetch, isRefetching } = useQuery({
     queryKey: ["payment-link", slug],
     queryFn: async () => {
       try {
-        const accessToken = await getAccessToken();
-        const response = await fetch(`/api/payment-links/${slug}`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
+        const response = await fetch(`/api/public/payment-links/${slug}`);
         return await response.json();
       } catch (error) {
         return null;
