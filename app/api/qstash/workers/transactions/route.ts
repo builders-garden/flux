@@ -19,18 +19,18 @@ export const POST = async (req: NextRequest) => {
       transport: http(),
       chain: mainnet,
     });
-    const ens = await getEnsName(publicClient, {
+    /*const ens = await getEnsName(publicClient, {
       address: fromAddress,
     });
     const ensAvatar = await getEnsAvatar(publicClient, {
       name: normalize(ens as string),
-    });
+    });*/
 
     customer = await createCustomer(
       fromAddress,
-      userId,
-      ens as string | undefined,
-      ensAvatar as string | undefined
+      userId
+      //ens as string | undefined,
+      // ensAvatar as string | undefined
     );
   }
 
