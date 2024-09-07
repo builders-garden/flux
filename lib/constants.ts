@@ -256,8 +256,16 @@ export const getContractAddressByChainId = (
   chainId: number
 ): string | undefined => {
   const payment = RECURRING_PAYMENTS.find((p) => p.chainId === chainId);
+export const getContractAddressByChainId = (
+  chainId: number
+): string | undefined => {
+  const payment = RECURRING_PAYMENTS.find((p) => p.chainId === chainId);
   return payment?.contractAddress;
 };
+export const getTokenAddressByChainId = (
+  chainId: number
+): string | undefined => {
+  const payment = RECURRING_PAYMENTS.find((p) => p.chainId === chainId);
 export const getTokenAddressByChainId = (
   chainId: number
 ): string | undefined => {

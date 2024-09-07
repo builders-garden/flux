@@ -10,7 +10,7 @@ export default function PaymentLinksPage() {
     return (
       <section className="flex flex-col space-y-4">
         <h1 className="text-3xl font-bold">Payment Links</h1>
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center space-x-4">
           <Skeleton className="h-10 rounded-lg w-full sm:max-w-[44%]" />
           <Skeleton className="h-10 rounded-lg w-36" />
         </div>

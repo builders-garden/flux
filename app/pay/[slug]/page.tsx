@@ -1,7 +1,13 @@
 "use client";
 import WorldIDVerifyButton from "@/components/world-id-verify-button";
 import { usePaymentLink } from "@/hooks";
-import { LIFI_DIAMOND_PROXY, Token, TOKENS } from "@/lib/constants";
+import {
+  LIFI_DIAMOND_PROXY,
+  RECURRING_PAYMENTS,
+  RecurringPayment,
+  Token,
+  TOKENS,
+} from "@/lib/constants";
 import { getRoutesResult } from "@/lib/lifi/lifi";
 import { calculateTokenAmount } from "@/lib/lifi/utils";
 import { BASE_USDC_ADDRESS, shortenAddress } from "@/lib/utils";
@@ -10,9 +16,9 @@ import {
   Input,
   Image,
   Button,
-  Select,
   SelectItem,
   Skeleton,
+  Select,
 } from "@nextui-org/react";
 import {
   ArrowRightIcon,
@@ -23,7 +29,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { erc20Abi, parseUnits } from "viem";
+import { erc20Abi, formatUnits, parseUnits } from "viem";
 import {
   useAccount,
   useConnect,
@@ -67,15 +73,13 @@ export default function PayPage({
         parseFloat(paymentLink?.product.price.toString() || "0")
       );
 
-      console.log(amount);
-
       const tokenAmount = parseUnits(amount?.toString()!, parseInt(decimals));
-
-      console.log(tokenAmount);
 
       const isBaseUSDC =
         tokenAddress.toLowerCase() === BASE_USDC_ADDRESS.toLowerCase() &&
         chainId === "8453";
+
+      const isRecurring = paymentLink?.product.paymentMethod === "RECURRING";
 
       if (tokenAddress !== "0x0000000000000000000000000000000000000000") {
         const allowance = await publicClient?.readContract({
@@ -85,13 +89,29 @@ export default function PayPage({
           args: [address!, LIFI_DIAMOND_PROXY],
         });
 
-        if (typeof allowance !== "undefined" && allowance < tokenAmount) {
-          if (!isBaseUSDC) {
+        const totalSupply = await publicClient?.readContract({
+          abi: erc20Abi,
+          address: tokenAddress,
+          functionName: "totalSupply",
+        });
+
+        if (
+          typeof allowance !== "undefined" &&
+          typeof totalSupply !== "undefined" &&
+          ((allowance < tokenAmount && !isRecurring) ||
+            (allowance < totalSupply && isRecurring))
+        ) {
+          if (!isBaseUSDC || isRecurring) {
             const approveTx = await walletClient?.writeContract({
               abi: erc20Abi,
               address: tokenAddress,
               functionName: "approve",
-              args: [LIFI_DIAMOND_PROXY, tokenAmount],
+              args: [
+                LIFI_DIAMOND_PROXY,
+                paymentLink?.product.paymentMethod === "RECURRING"
+                  ? totalSupply!
+                  : tokenAmount,
+              ],
             });
 
             if (approveTx) {
@@ -103,54 +123,29 @@ export default function PayPage({
         }
       }
 
-      if (isBaseUSDC) {
-        // perform a transfer
-        const txHash = await walletClient?.writeContract({
-          abi: erc20Abi,
-          address: tokenAddress,
-          functionName: "transfer",
-          args: [paymentLink?.user.smartAccountAddress!, tokenAmount],
+      if (paymentLink?.product.paymentMethod === "RECURRING") {
+        await fetch("/api/public/subscriptions", {
+          method: "POST",
+          body: JSON.stringify({
+            address,
+            productId: paymentLink?.product.id,
+            tokenAddress,
+            tokenAmount: formatUnits(tokenAmount, parseInt(decimals)),
+            merchantAddress: paymentLink?.user.smartAccountAddress,
+            chainId,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
         });
-
-        if (txHash) {
-          const txReceipt = await publicClient?.waitForTransactionReceipt({
-            hash: txHash,
-          });
-
-          await fetch("/api/public/transactions", {
-            method: "POST",
-            body: JSON.stringify({
-              userId: paymentLink?.user.id,
-              productId: paymentLink?.product.id,
-              hash: txReceipt?.transactionHash,
-              amount: paymentLink?.product.price,
-              fromAddress: address,
-              timestamp: new Date().toISOString(),
-            }),
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
-        }
       } else {
-        // call lifi
-        const lifiRoute = await getRoutesResult(
-          address!,
-          paymentLink?.user.smartAccountAddress!,
-          parseInt(chainId),
-          tokenAddress,
-          tokenAmount.toString()
-        );
-
-        const res = await getStepTransaction(lifiRoute.steps[0]);
-
-        if (res && res.transactionRequest) {
-          const txHash = await walletClient?.sendTransaction({
-            to: res.transactionRequest.to,
-            value: res.transactionRequest.value
-              ? BigInt(res.transactionRequest.value)
-              : BigInt(0),
-            data: res.transactionRequest.data! as `0x${string}`,
+        if (isBaseUSDC) {
+          // perform a transfer
+          const txHash = await walletClient?.writeContract({
+            abi: erc20Abi,
+            address: tokenAddress,
+            functionName: "transfer",
+            args: [paymentLink?.user.smartAccountAddress!, tokenAmount],
           });
 
           if (txHash) {
@@ -173,10 +168,50 @@ export default function PayPage({
               },
             });
           }
+        } else {
+          // call lifi
+          const lifiRoute = await getRoutesResult(
+            address!,
+            paymentLink?.user.smartAccountAddress!,
+            parseInt(chainId),
+            tokenAddress,
+            tokenAmount.toString()
+          );
+
+          const res = await getStepTransaction(lifiRoute.steps[0]);
+
+          if (res && res.transactionRequest) {
+            const txHash = await walletClient?.sendTransaction({
+              to: res.transactionRequest.to,
+              value: res.transactionRequest.value
+                ? BigInt(res.transactionRequest.value)
+                : BigInt(0),
+              data: res.transactionRequest.data! as `0x${string}`,
+            });
+
+            if (txHash) {
+              const txReceipt = await publicClient?.waitForTransactionReceipt({
+                hash: txHash,
+              });
+
+              await fetch("/api/public/transactions", {
+                method: "POST",
+                body: JSON.stringify({
+                  userId: paymentLink?.user.id,
+                  productId: paymentLink?.product.id,
+                  hash: txReceipt?.transactionHash,
+                  amount: paymentLink?.product.price,
+                  fromAddress: address,
+                  timestamp: new Date().toISOString(),
+                }),
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              });
+            }
+          }
         }
       }
-
-      typeof window !== "undefined" && window.open(paymentLink?.redirectUrl);
       setSuccess(true);
     } catch (error) {
       console.error(error);
@@ -259,38 +294,73 @@ export default function PayPage({
               {/* <h3 className="text-lg font-semibold text-start">
                 Payment method
               </h3> */}
-              <Select
-                items={TOKENS}
-                variant="bordered"
-                placeholder="Select token and chain"
-                labelPlacement="outside"
-                selectedKeys={selectedToken}
-                onSelectionChange={async (value) => {
-                  // @ts-expect-error - Fix this
-                  const token = value.values().next().value;
-                  const [, , chainId] = token.split("-");
-                  await walletClient?.switchChain({ id: parseInt(chainId) });
+              {paymentLink?.product.paymentMethod === "RECURRING" ? (
+                <Select
+                  items={RECURRING_PAYMENTS}
+                  variant="bordered"
+                  placeholder="Select token and chain"
+                  labelPlacement="outside"
+                  selectedKeys={selectedToken}
+                  onSelectionChange={async (value) => {
+                    // @ts-expect-error - Fix this
+                    const token = value.values().next().value;
+                    const [, , chainId] = token.split("-");
+                    await walletClient?.switchChain({ id: parseInt(chainId) });
 
-                  // @ts-expect-error - Fix this
-                  setSelectedToken(value);
-                }}
-                isRequired
-              >
-                {(token: Token) => (
-                  <SelectItem
-                    key={`${token.symbol}-${token.address}-${token.chainId}-${token.decimals}`}
-                    textValue={`${token.symbol} (${token.chainName})`}
-                  >
-                    <div className="flex gap-2 items-center">
-                      <div className="flex flex-col">
-                        <span className="text-small">
-                          {token.symbol} ({token.chainName})
-                        </span>
+                    // @ts-expect-error - Fix this
+                    setSelectedToken(value);
+                  }}
+                  isRequired
+                >
+                  {(payment: RecurringPayment) => (
+                    <SelectItem
+                      key={`${payment.tokenSymbol}-${payment.tokenAddress}-${payment.chainId}-${payment.tokenDecimals}`}
+                      textValue={`${payment.tokenSymbol} (${payment.chainName})`}
+                    >
+                      <div className="flex gap-2 items-center">
+                        <div className="flex flex-col">
+                          <span className="text-small">
+                            {payment.tokenSymbol} ({payment.chainName})
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  </SelectItem>
-                )}
-              </Select>
+                    </SelectItem>
+                  )}
+                </Select>
+              ) : (
+                <Select
+                  items={TOKENS}
+                  variant="bordered"
+                  placeholder="Select token and chain"
+                  labelPlacement="outside"
+                  selectedKeys={selectedToken}
+                  onSelectionChange={async (value) => {
+                    // @ts-expect-error - Fix this
+                    const token = value.values().next().value;
+                    const [, , chainId] = token.split("-");
+                    await walletClient?.switchChain({ id: parseInt(chainId) });
+
+                    // @ts-expect-error - Fix this
+                    setSelectedToken(value);
+                  }}
+                  isRequired
+                >
+                  {(token: Token) => (
+                    <SelectItem
+                      key={`${token.symbol}-${token.address}-${token.chainId}-${token.decimals}`}
+                      textValue={`${token.symbol} (${token.chainName})`}
+                    >
+                      <div className="flex gap-2 items-center">
+                        <div className="flex flex-col">
+                          <span className="text-small">
+                            {token.symbol} ({token.chainName})
+                          </span>
+                        </div>
+                      </div>
+                    </SelectItem>
+                  )}
+                </Select>
+              )}
               {paymentLink?.requiresWorldId && (
                 <WorldIDVerifyButton
                   productId={paymentLink?.product.id}

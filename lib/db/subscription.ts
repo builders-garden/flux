@@ -1,10 +1,13 @@
-import { PrismaClient, Subscription } from '@prisma/client';
+import { PrismaClient, Subscription } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-type SubscriptionCreateInput = Omit<Subscription, 'id' | 'createdAt' | 'updatedAt' | 'product'> & {
-    productId: string;
-  };
+type SubscriptionCreateInput = Omit<
+  Subscription,
+  "id" | "createdAt" | "updatedAt" | "product"
+> & {
+  productId: string;
+};
 
 export async function createSubscription(data: SubscriptionCreateInput) {
   return prisma.subscription.create({
@@ -12,7 +15,10 @@ export async function createSubscription(data: SubscriptionCreateInput) {
   });
 }
 
-export async function updateSubscription(id: string, data: Partial<SubscriptionCreateInput>) {
+export async function updateSubscription(
+  id: string,
+  data: Partial<SubscriptionCreateInput>
+) {
   return prisma.subscription.update({
     where: { id },
     data,
@@ -31,14 +37,18 @@ export async function getSubscriptionByHash(hash: string) {
   });
 }
 
-export async function getSubscriptionsBySubscriberAddress(subscriberAddress: string) {
-    return prisma.subscription.findMany({
-      where: { subscriberAddress },
-    });
+export async function getSubscriptionsBySubscriberAddress(
+  subscriberAddress: string
+) {
+  return prisma.subscription.findMany({
+    where: { subscriberAddress },
+  });
 }
-  
-  export async function getSubscriptionsByMerchantAddress(merchantAddress: string) {
-    return prisma.subscription.findMany({
-      where: { merchantAddress },
-    });
+
+export async function getSubscriptionsByMerchantAddress(
+  merchantAddress: string
+) {
+  return prisma.subscription.findMany({
+    where: { merchantAddress },
+  });
 }
