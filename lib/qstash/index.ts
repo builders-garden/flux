@@ -1,3 +1,4 @@
+import { Webhook } from "@prisma/client";
 import { Client } from "@upstash/qstash";
 
 if (!process.env.QSTASH_TOKEN) {
@@ -46,7 +47,7 @@ export const relayTransactionCreation = async (data: {
 };
 
 export const relayWebhookEvent = async (data: {
-  webhookId: string;
+  webhook: Webhook;
   payload: { [key: string]: unknown };
 }) => {
   await publishToQstash(

@@ -1,3 +1,5 @@
+import { WebhookEventType } from "@prisma/client";
+
 export const USDC_BASE_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
 export const LIFI_DIAMOND_PROXY = "0x1231deb6f5749ef6ce6943a275a1d3e7486f4eae"; //on most chains
 
@@ -233,19 +235,19 @@ export const RECURRING_PAYMENTS: RecurringPayment[] = [
 
 export const WEBHOOK_EVENTS = [
   {
-    id: "customer_created",
+    id: WebhookEventType.CUSTOMER_CREATED,
     name: "Customer created",
   },
   {
-    id: "payment_successful",
+    id: WebhookEventType.PAYMENT_SUCCESSFUL,
     name: "Payment successful",
   },
   {
-    id: "subscription_created",
+    id: WebhookEventType.SUBSCRIPTION_CREATED,
     name: "Subscription created",
   },
   {
-    id: "subscription_cancelled",
+    id: WebhookEventType.SUBSCRIPTION_CANCELLED,
     name: "Subscription cancelled",
   },
 ];
@@ -256,6 +258,7 @@ export const getContractAddressByChainId = (
   const payment = RECURRING_PAYMENTS.find((p) => p.chainId === chainId);
   return payment?.contractAddress;
 };
+
 export const getTokenAddressByChainId = (
   chainId: number
 ): string | undefined => {

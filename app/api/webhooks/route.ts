@@ -13,9 +13,9 @@ export const POST = async (req: Request) => {
 
   const body = await req.json();
 
-  const { name, url, event } = body;
+  const { name, url, eventType } = body;
 
-  const webhook = await createWebhook(user.id, { name, url, event });
+  const webhook = await createWebhook(user.id, { name, url, eventType });
 
   return NextResponse.json(webhook);
 };

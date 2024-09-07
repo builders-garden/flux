@@ -3,8 +3,11 @@ import { createTransaction } from "@/lib/db/transactions";
 import { relayWebhookEvent } from "@/lib/qstash";
 import { NextRequest, NextResponse } from "next/server";
 import { createPublicClient, http } from "viem";
+import { normalize } from "viem/ens";
 import { getEnsAvatar, getEnsName } from "viem/actions";
 import { mainnet } from "viem/chains";
+import { getWebhookByEventType } from "@/lib/db/webhook";
+import { WebhookEventType } from "@prisma/client";
 
 export const POST = async (req: NextRequest) => {
   const { data } = await req.json();
@@ -16,8 +19,12 @@ export const POST = async (req: NextRequest) => {
       transport: http(),
       chain: mainnet,
     });
-    const ens = await getEnsName(publicClient, fromAddress);
-    const ensAvatar = await getEnsAvatar(publicClient, fromAddress);
+    const ens = await getEnsName(publicClient, {
+      address: fromAddress,
+    });
+    const ensAvatar = await getEnsAvatar(publicClient, {
+      name: normalize(ens as string),
+    });
 
     customer = await createCustomer(
       fromAddress,
@@ -47,8 +54,13 @@ export const POST = async (req: NextRequest) => {
     userId,
   });
 
+  const webhook = await getWebhookByEventType(
+    userId,
+    WebhookEventType.PAYMENT_SUCCESSFUL
+  );
+
   await relayWebhookEvent({
-    webhookId: transaction.id,
+    webhook: webhook!,
     payload: transaction,
   });
 

@@ -6,16 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (req: NextRequest) => {
   const { data } = await req.json();
-  const { webhookId, payload } = data;
-  const webhook = await getWebhookById(webhookId);
-
-  if (!webhook) {
-    console.error("Webhook not found");
-    return NextResponse.json(
-      { success: false, message: "Webhook not found" },
-      { status: 404 }
-    );
-  }
+  const { webhook, payload } = data;
 
   const privateKey = createPrivateKey(process.env.WEBHOOK_EVENTS_PRIVATE_KEY!);
   const signature = sign(
@@ -33,8 +24,8 @@ export const POST = async (req: NextRequest) => {
       metadata: {
         webhookId: webhook.id,
         webhookName: webhook.name,
-        eventType: webhook.event,
-        timestamp: Date.now()
+        eventType: webhook.eventType,
+        timestamp: Date.now(),
       },
       payload,
     }),
@@ -62,7 +53,7 @@ export const POST = async (req: NextRequest) => {
 
   const responseBody = await response.json();
   await createWebhookEventLog({
-    webhookId,
+    webhookId: webhook.id,
     payload,
     status,
     statusCode: response.status,

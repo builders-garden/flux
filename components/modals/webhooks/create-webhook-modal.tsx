@@ -48,7 +48,7 @@ export default function CreateWebhookModal({
         body: JSON.stringify({
           name,
           url: webhookUrl,
-          event,
+          eventType: event,
         }),
       });
 
