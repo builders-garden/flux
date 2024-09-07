@@ -17,7 +17,7 @@ export const GET = async (
     return NextResponse.json({ message: "User not found" }, { status: 404 });
   }
   const product = await getProductById(id);
-  if (!product || product.user.id !== user.id) {
+  if (!product || product.userId !== user.id) {
     return NextResponse.json({ message: "Product not found" }, { status: 404 });
   }
   return NextResponse.json(product);
@@ -33,7 +33,7 @@ export const PUT = async (
     return NextResponse.json({ message: "User not found" }, { status: 404 });
   }
   const product = await getProductById(id);
-  if (!product || product.user.id !== user.id) {
+  if (!product || product.userId !== user.id) {
     return NextResponse.json({ message: "Product not found" }, { status: 404 });
   }
   const body = await req.formData();
@@ -65,7 +65,7 @@ export const DELETE = async (
     return NextResponse.json({ message: "User not found" }, { status: 404 });
   }
   const product = await getProductById(id);
-  if (!product || product.user.id !== user.id) {
+  if (!product || product.userId !== user.id) {
     return NextResponse.json({ message: "Product not found" }, { status: 404 });
   }
   await deleteProduct(id);

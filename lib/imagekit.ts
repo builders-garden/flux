@@ -19,3 +19,8 @@ export const uploadImage = async (file: File, fileName: string) => {
   });
   return response.url;
 };
+
+export const deleteImage = async (imageUrl: string) => {
+  const response = await imagekit.deleteFile(imageUrl);
+  return response;
+};
