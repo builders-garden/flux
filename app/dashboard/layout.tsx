@@ -105,7 +105,7 @@ export default function DashboardLayout({
     }
   };
 
-  if (!user || !user.wallet || loading) {
+  if (!currentUser || loading) {
     return (
       <section>
         <div className="flex flex-row justify-between p-4">
@@ -127,7 +127,9 @@ export default function DashboardLayout({
         <Dropdown>
           <DropdownTrigger>
             <Button color="primary">
-              {shortenAddress(user?.wallet?.address)}
+              {shortenAddress(
+                currentUser?.smartAccountAddress || currentUser?.address!
+              )}
             </Button>
           </DropdownTrigger>
           <DropdownMenu aria-label="Static Actions">
