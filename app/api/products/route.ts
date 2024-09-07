@@ -5,6 +5,7 @@ import {
 } from "@/lib/db/products";
 import { getUserByAddress } from "@/lib/db/users";
 import { uploadImage } from "@/lib/imagekit";
+import { PaymentMethod } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (req: NextRequest) => {
@@ -29,6 +30,7 @@ export const POST = async (req: NextRequest) => {
       product.description,
       product.imageUrl,
       parseFloat(product.price.toString()),
+      product.paymentMethod,
       user.id
     );
     return NextResponse.json(duplicateProduct);
@@ -37,6 +39,7 @@ export const POST = async (req: NextRequest) => {
   const name = body.get("name") as string;
   const description = body.get("description") as string;
   const price = body.get("price") as string;
+  const paymentMethod = body.get("paymentMethod") as PaymentMethod;
   const image: File | null = body.get("files[0]") as unknown as File;
 
   const requiredFields = { name, price, image, description };
@@ -55,6 +58,7 @@ export const POST = async (req: NextRequest) => {
     description,
     imageUrl,
     parseFloat(price),
+    paymentMethod,
     user!.id
   );
 

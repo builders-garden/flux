@@ -33,7 +33,13 @@ import { useProductsStore } from "@/lib/store";
 import UpdateProductModal from "@/components/modals/products/update-product-modal";
 import { usePrivy } from "@privy-io/react-auth";
 
-const INITIAL_VISIBLE_COLUMNS = ["name", "price", "createdAt", "actions"];
+const INITIAL_VISIBLE_COLUMNS = [
+  "name",
+  "price",
+  "paymentMethid",
+  "createdAt",
+  "actions",
+];
 
 export default function ProductsTable({
   products,

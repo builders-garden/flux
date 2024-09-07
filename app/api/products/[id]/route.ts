@@ -5,6 +5,7 @@ import {
 } from "@/lib/db/products";
 import { getUserByAddress } from "@/lib/db/users";
 import { uploadImage } from "@/lib/imagekit";
+import { PaymentMethod } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (
@@ -40,6 +41,7 @@ export const PUT = async (
   const name = body.get("name") as string;
   const description = body.get("description") as string;
   const price = body.get("price") as string;
+  const paymentMethod = body.get("paymentMethod") as PaymentMethod;
   const image: File | null = body.get("files[0]") as unknown as File;
 
   let imageUrl: string = "";
@@ -50,6 +52,7 @@ export const PUT = async (
     ...(name ? { name } : {}),
     ...(description ? { description } : {}),
     ...(price ? { price: parseFloat(price) } : {}),
+    ...(paymentMethod ? { paymentMethod } : {}),
     ...(image ? { imageUrl } : {}),
   });
   return NextResponse.json(updatedProduct);

@@ -1,6 +1,7 @@
 import { prisma } from "./index";
 import { createThirdwebClient } from "thirdweb";
 import { upload } from "thirdweb/storage";
+import { encode } from "@ensdomains/content-hash";
 
 const generateHTML = (slug: string) =>
   `<html>
@@ -21,13 +22,23 @@ export const createRecord = async (slug: string, address: string) => {
       files: [new File([generateHTML(slug)], `index.html`)],
     });
 
+    console.log(campaignURI);
+
+    const ipfsHash = campaignURI
+      .replace("ipfs://", "")
+      .replace("/index.html", "");
+
+    console.log(ipfsHash);
+
+    const encodedIpfsHash = "0x" + encode("ipfs", ipfsHash);
+
     const newRecord = await prisma.record.create({
       data: {
         owner: address,
         name: `${slug}.fluxlink.eth`,
         addresses: {},
         texts: {},
-        contenthash: campaignURI.replace("/index.html", ""),
+        contenthash: encodedIpfsHash,
       },
     });
 

@@ -1,5 +1,5 @@
-import { Prisma } from '@prisma/client';
-import { prisma } from "./index"
+import { PaymentMethod, Prisma } from "@prisma/client";
+import { prisma } from "./index";
 
 //Create new Product entry in DB
 export async function createProduct(
@@ -7,6 +7,7 @@ export async function createProduct(
   description: string,
   imageUrl: string,
   price: number,
+  paymentMethod: PaymentMethod,
   userId: string
 ) {
   try {
@@ -16,12 +17,13 @@ export async function createProduct(
         description,
         imageUrl,
         price: new Prisma.Decimal(price),
+        paymentMethod,
         userId,
       },
     });
     return newProduct;
   } catch (error) {
-    console.error('Error creating product:', error);
+    console.error("Error creating product:", error);
     throw error;
   } finally {
     await prisma.$disconnect();
@@ -36,6 +38,7 @@ export async function updateProduct(
     description?: string;
     imageUrl?: string;
     price?: number;
+    paymentMethod?: PaymentMethod;
     userId?: string;
   }
 ) {
@@ -49,7 +52,7 @@ export async function updateProduct(
     });
     return updatedProduct;
   } catch (error) {
-    console.error('Error updating product:', error);
+    console.error("Error updating product:", error);
     throw error;
   } finally {
     await prisma.$disconnect();
@@ -63,7 +66,7 @@ export async function getProductById(id: string) {
     });
     return product;
   } catch (error) {
-    console.error('Error fetching product:', error);
+    console.error("Error fetching product:", error);
     throw error;
   } finally {
     await prisma.$disconnect();
@@ -77,7 +80,7 @@ export async function getProductsByUser(userId: string) {
     });
     return products;
   } catch (error) {
-    console.error('Error fetching products by user:', error);
+    console.error("Error fetching products by user:", error);
     throw error;
   } finally {
     await prisma.$disconnect();
@@ -87,7 +90,7 @@ export async function getProductsByUser(userId: string) {
 export async function getAllProducts(
   page: number = 1,
   pageSize: number = 10,
-  orderBy: 'asc' | 'desc' = 'desc'
+  orderBy: "asc" | "desc" = "desc"
 ) {
   try {
     const products = await prisma.product.findMany({
@@ -99,7 +102,7 @@ export async function getAllProducts(
     });
     return products;
   } catch (error) {
-    console.error('Error fetching all products:', error);
+    console.error("Error fetching all products:", error);
     throw error;
   } finally {
     await prisma.$disconnect();
@@ -111,14 +114,14 @@ export async function searchProducts(searchTerm: string) {
     const products = await prisma.product.findMany({
       where: {
         OR: [
-          { name: { contains: searchTerm, mode: 'insensitive' } },
-          { description: { contains: searchTerm, mode: 'insensitive' } },
+          { name: { contains: searchTerm, mode: "insensitive" } },
+          { description: { contains: searchTerm, mode: "insensitive" } },
         ],
       },
     });
     return products;
   } catch (error) {
-    console.error('Error searching products:', error);
+    console.error("Error searching products:", error);
     throw error;
   } finally {
     await prisma.$disconnect();
@@ -131,7 +134,7 @@ export async function deleteProduct(id: string) {
       where: { id },
     });
   } catch (error) {
-    console.error('Error deleting product:', error);
+    console.error("Error deleting product:", error);
     throw error;
   } finally {
     await prisma.$disconnect();

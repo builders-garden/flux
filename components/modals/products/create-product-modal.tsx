@@ -7,6 +7,8 @@ import {
   ModalFooter,
   Button,
   Input,
+  SelectItem,
+  Select,
 } from "@nextui-org/react";
 import { usePrivy } from "@privy-io/react-auth";
 import {
@@ -16,6 +18,11 @@ import {
   UploadCloudIcon,
 } from "lucide-react";
 import { useState } from "react";
+
+type Method = {
+  id: string;
+  name: string;
+};
 
 export default function CreateProductModal({
   isOpen,
@@ -34,14 +41,18 @@ export default function CreateProductModal({
   const [productName, setProductName] = useState<string>("");
   const [productDescription, setProductDescription] = useState<string>("");
   const [productPrice, setProductPrice] = useState<string>("0");
+  const [selectedMethod, setSelectedMethod] = useState(new Set([]));
 
   const createProduct = async (onClose: () => void) => {
     setLoading(true);
     try {
+      const method = selectedMethod.values().next().value;
+
       const formData = new FormData();
       formData.append("name", productName);
       formData.append("description", productDescription);
       formData.append("price", productPrice);
+      formData.append("paymentMethod", method);
       if (imageFile) {
         formData.append("files[0]", imageFile);
       }
@@ -127,6 +138,35 @@ export default function CreateProductModal({
                 value={productPrice}
                 onValueChange={setProductPrice}
               />
+
+              <Select
+                items={[
+                  {
+                    id: "one-time",
+                    name: "One time payment",
+                  },
+                  {
+                    id: "monthly",
+                    name: "Each month",
+                  },
+                ]}
+                // label="Assigned to"
+                variant="bordered"
+                placeholder="Select payment type"
+                labelPlacement="outside"
+                selectedKeys={selectedMethod}
+                // @ts-expect-error - Ignore this
+                onSelectionChange={setSelectedMethod}
+                isRequired
+              >
+                {(method: Method) => (
+                  <SelectItem key={method.id} textValue={method.name}>
+                    <div className="flex gap-2 items-center">
+                      <span className="text-small">{method.name}</span>
+                    </div>
+                  </SelectItem>
+                )}
+              </Select>
             </ModalBody>
             <ModalFooter>
               <Button color="danger" variant="flat" onPress={onClose}>
@@ -137,6 +177,7 @@ export default function CreateProductModal({
                   !productName ||
                   !productDescription ||
                   !productPrice ||
+                  !selectedMethod ||
                   loading
                 }
                 isLoading={loading}

@@ -95,7 +95,6 @@ export default function CreateWebhookModal({
                 onValueChange={setWebhookUrl}
                 isRequired
               />
-
               <Select
                 items={[
                   {
