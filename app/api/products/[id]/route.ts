@@ -11,7 +11,7 @@ export const GET = async (
   req: NextRequest,
   { params: { id } }: { params: { id: string } }
 ) => {
-  const address = req.headers.get("address")!;
+  const address = req.headers.get("x-address")!;
   const user = await getUserByAddress(address);
   if (!user) {
     return NextResponse.json({ message: "User not found" }, { status: 404 });
@@ -27,7 +27,7 @@ export const PUT = async (
   req: NextRequest,
   { params: { id } }: { params: { id: string } }
 ) => {
-  const address = req.headers.get("address")!;
+  const address = req.headers.get("x-address")!;
   const user = await getUserByAddress(address);
   if (!user) {
     return NextResponse.json({ message: "User not found" }, { status: 404 });
@@ -59,7 +59,7 @@ export const DELETE = async (
   req: NextRequest,
   { params: { id } }: { params: { id: string } }
 ) => {
-  const address = req.headers.get("address")!;
+  const address = req.headers.get("x-address")!;
   const user = await getUserByAddress(address);
   if (!user) {
     return NextResponse.json({ message: "User not found" }, { status: 404 });
