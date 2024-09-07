@@ -1,5 +1,9 @@
 import { createCustomer, getCustomerByAddress } from "@/lib/db/customer";
-import { createTransaction } from "@/lib/db/transactions";
+import {
+  createTransaction,
+  getTransactionsByUserId,
+} from "@/lib/db/transactions";
+import { getUserByAddress } from "@/lib/db/users";
 import { Customer } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -24,13 +28,36 @@ export const POST = async (req: NextRequest) => {
     );
   }
 
-  const transaction = await createTransaction(
+  const transaction = await createTransaction({
     hash,
     amount,
-    customer?.id,
+    customerId: customer?.id,
     productId,
-    new Date(timestamp)
-  );
+    timestamp: new Date(timestamp),
+    userId,
+  });
 
   return NextResponse.json(transaction);
+};
+
+export const GET = async (req: NextRequest) => {
+  const address = req.headers.get("x-address")!;
+
+  const user = await getUserByAddress(address);
+  const { searchParams } = new URL(req.url);
+  const limit = searchParams.get("limit")
+    ? parseInt(searchParams.get("limit")!)
+    : 10;
+  const page = searchParams.get("page")
+    ? parseInt(searchParams.get("page")!)
+    : 0;
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const transactions = await getTransactionsByUserId(user.id, {
+    limit,
+    offset: page * limit,
+  });
+  return NextResponse.json(transactions);
 };
