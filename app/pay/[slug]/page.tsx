@@ -247,7 +247,7 @@ export default function PayPage({
   return (
     <div className="min-h-screen min-w-screen">
       <div className="grid grid-cols-4 h-screen">
-        <div className="col-span-2 bg-gray-50 p-32 h-full flex flex-col items-center justify-center space-y-2">
+        <div className="col-span-2 lg:row-span-2 bg-gray-50 p-32 h-full flex flex-col items-center justify-center space-y-2">
           <div className="flex items-center justify-center space-x-2">
             <div className="rounded-full p-2 shadow-sm bg-white">
               <StoreIcon className="text-gray-400" />
@@ -276,7 +276,7 @@ export default function PayPage({
             {paymentLink?.product.paymentMethod === "RECURRING" && "/ month"}
           </h2>
         </div>
-        <div className="col-span-2 bg-white p-4 h-full flex flex-col items-center justify-center w-full max-w-md mx-auto space-y-4">
+        <div className="col-span-2 lg:row-span-2 bg-white p-4 h-full flex flex-col items-center justify-center w-full max-w-md mx-auto space-y-4">
           {address && !success && (
             <>
               <Input

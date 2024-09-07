@@ -61,7 +61,10 @@ export const POST = async (req: NextRequest) => {
 
   await relayWebhookEvent({
     webhook: webhook!,
-    payload: transaction,
+    payload: {
+      ...transaction,
+      customerAddress: customer.address,
+    },
   });
 
   return NextResponse.json(transaction);

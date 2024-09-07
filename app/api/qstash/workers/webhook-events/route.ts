@@ -8,27 +8,33 @@ export const POST = async (req: NextRequest) => {
   const { data } = await req.json();
   const { webhook, payload } = data;
 
+  const webhookPayload = {
+    metadata: {
+      webhookId: webhook.id,
+      webhookName: webhook.name,
+      eventType: webhook.eventType,
+      timestamp: Date.now(),
+    },
+    eventData: payload,
+  };
+
   const privateKey = createPrivateKey(process.env.WEBHOOK_EVENTS_PRIVATE_KEY!);
   const signature = sign(
     "sha256",
-    Buffer.from(JSON.stringify({ url: webhook.url, payload })),
+    Buffer.from(JSON.stringify({ url: webhook.url, payload: webhookPayload })),
     privateKey
   ).toString("base64");
+
+  console.log(JSON.stringify({ url: webhook.url, payload: webhookPayload }));
+  console.log({ signature });
+
   const response = await fetch(webhook.url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "x-flux-signature": signature,
     },
-    body: JSON.stringify({
-      metadata: {
-        webhookId: webhook.id,
-        webhookName: webhook.name,
-        eventType: webhook.eventType,
-        timestamp: Date.now(),
-      },
-      payload,
-    }),
+    body: JSON.stringify(webhookPayload),
   });
 
   let status: WebhookEventLogStatus = WebhookEventLogStatus.UNKNOWN;

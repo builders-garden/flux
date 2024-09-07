@@ -32,8 +32,10 @@ import DeleteProductModal from "@/components/modals/products/delete-product-moda
 import { useProductsStore } from "@/lib/store";
 import UpdateProductModal from "@/components/modals/products/update-product-modal";
 import { usePrivy } from "@privy-io/react-auth";
+import IdChip from "@/components/id-chip";
 
 const INITIAL_VISIBLE_COLUMNS = [
+  "id",
   "name",
   "price",
   // "paymentMethod",
@@ -113,6 +115,8 @@ export default function ProductsTable({
     const cellValue = product[columnKey];
 
     switch (columnKey) {
+      case "id":
+        return <IdChip id={cellValue} />;
       case "name":
         return (
           <div className="flex flex-row space-x-2 items-center">

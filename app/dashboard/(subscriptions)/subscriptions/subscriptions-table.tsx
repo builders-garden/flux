@@ -15,8 +15,10 @@ import { columns } from "./data";
 import { SearchIcon } from "lucide-react";
 import { Product, Subscription, User } from "@prisma/client";
 import { shortenAddress } from "@/lib/utils";
+import IdChip from "@/components/id-chip";
 
 const INITIAL_VISIBLE_COLUMNS = [
+  "id",
   "subscriberAddress",
   "product",
   "price",
@@ -74,6 +76,8 @@ export default function SubscriptionsTable({
     const cellValue = subscription[columnKey];
     console.log(subscription);
     switch (columnKey) {
+      case "id":
+        return <IdChip id={cellValue} />;
       case "price":
         return `$${subscription.product.price} / month`;
       case "status":
