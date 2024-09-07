@@ -28,7 +28,7 @@ export default function usePimlico() {
   const fetchPimlicoSmartAccount = useCallback(async () => {
     if (!publicClient || !walletClient) return;
 
-    const safeSmartAccount = await toSimpleSmartAccount({
+    const simpleSmartAccount = await toSimpleSmartAccount({
       client: publicClient,
       owner: walletClient,
       entryPoint: {
@@ -38,7 +38,7 @@ export default function usePimlico() {
     });
 
     const smartAccountClient = createSmartAccountClient({
-      account: safeSmartAccount,
+      account: simpleSmartAccount,
       chain: baseSepolia,
       bundlerTransport: http(pimlicoRpcUrl(baseSepolia), {}),
       paymaster: pimlicoClient(baseSepolia),
@@ -50,7 +50,22 @@ export default function usePimlico() {
       },
     });
     setSmartAccountClient(smartAccountClient);
+    return smartAccountClient;
   }, [publicClient, walletClient]);
+
+  const predictSmartAccountAddress = async () => {
+    if (!publicClient || !walletClient) return;
+
+    const simpleSmartAccount = await toSimpleSmartAccount({
+      client: publicClient,
+      owner: walletClient,
+      entryPoint: {
+        address: entryPoint07Address,
+        version: "0.7",
+      }, // global entrypoint
+    });
+    return simpleSmartAccount.address;
+  }
 
   useEffect(() => {
     if (embeddedWallet) {
@@ -64,5 +79,5 @@ export default function usePimlico() {
     }
   }, [isConnected, walletClient, publicClient, fetchPimlicoSmartAccount]);
 
-  return { smartAccountClient };
+  return { smartAccountClient, predictSmartAccountAddress };
 }
