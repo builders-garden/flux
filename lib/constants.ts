@@ -5,6 +5,7 @@ export interface Token {
   chainId: number;
   chainName: string;
   address: string;
+  decimals: number;
 }
 
 export const TOKENS: Token[] = [
@@ -87,7 +88,6 @@ export const TOKENS: Token[] = [
     chainName: "Celo",
     address: "0x471EcE3750Da237f93B8E339c536989b8978a438",
     decimals: 18,
-
   },
   {
     symbol: "WETH",

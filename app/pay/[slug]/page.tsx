@@ -42,7 +42,7 @@ export default function PayPage({
       const token = selectedToken.values().next().value;
       console.log(token);
 
-      const [symbol, tokenAddress, chainId] = token.split("-");
+      const [symbol, tokenAddress, chainId, decimals] = token.split("-");
 
       await walletClient?.switchChain({ id: parseInt(chainId) });
 
@@ -219,7 +219,7 @@ export default function PayPage({
               >
                 {(token: Token) => (
                   <SelectItem
-                    key={`${token.symbol}-${token.address}-${token.chainId}`}
+                    key={`${token.symbol}-${token.address}-${token.chainId}-${token.decimals}`}
                     textValue={`${token.symbol} (${token.chainName})`}
                   >
                     <div className="flex gap-2 items-center">
