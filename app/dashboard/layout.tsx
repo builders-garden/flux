@@ -114,7 +114,7 @@ export default function DashboardLayout({
           </Link>
           <Skeleton className="flex w-36 h-10 rounded-lg" />
         </div>
-        <div className="p-4 flex flex-row space-x-8 w-full h-full">
+        <div className="p-4 hidden md:flex flex-row space-x-8 w-full h-full">
           <nav className="flex flex-col space-y-2 max-w-[200px] flex-shrink-0 border-r-1 pr-8 min-h-full">
             {menuItems.map((menuItem, index) => (
               <Skeleton
@@ -174,8 +174,8 @@ export default function DashboardLayout({
           </DropdownMenu>
         </Dropdown>
       </div>
-      <div className="p-4 flex flex-row space-x-8 w-full h-full">
-        <nav className="flex flex-col space-y-2 max-w-[200px] flex-shrink-0 border-r-1 pr-8 min-h-full">
+      <div className="p-4 flex-row space-x-0 md:space-x-8 w-full flex">
+        <nav className="hidden md:flex flex-col space-y-2 max-w-[200px] flex-shrink-0 border-r-1 pr-8 min-h-full">
           {menuItems.map((menuItem) => (
             <Button
               color="primary"

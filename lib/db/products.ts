@@ -63,6 +63,9 @@ export async function getProductById(id: string) {
   try {
     const product = await prisma.product.findUnique({
       where: { id },
+      include: {
+        user: true,
+      },
     });
     return product;
   } catch (error) {

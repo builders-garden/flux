@@ -7,7 +7,7 @@ export default function Dashboard() {
       <Card>
         <CardBody className="p-8 space-y-4">
           <h1 className="text-3xl font-bold">Get started with Flux</h1>
-          <div className="grid grid-cols-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="flex flex-col space-y-2">
               <Chip color="warning" size="sm">
                 No code
