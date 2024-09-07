@@ -12,7 +12,7 @@ export const DELETE = async (
   if (!user) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
-  const webhook = await getWebhookById(id);
+  const webhook = await getWebhookById(id, user.id);
   if (!webhook || webhook.userId !== user.id) {
     return NextResponse.json({ error: "Webhook not found" }, { status: 404 });
   }
@@ -30,15 +30,32 @@ export const PUT = async (
   if (!user) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
-  const webhook = await getWebhookById(id);
+  const webhook = await getWebhookById(id, user.id);
   if (!webhook || webhook.userId !== user.id) {
     return NextResponse.json({ error: "Webhook not found" }, { status: 404 });
   }
   const { name, url, event } = await req.json();
-  await updateWebhook(id, { 
-    ...(name && { name }),  
+  await updateWebhook(id, {
+    ...(name && { name }),
     ...(url && { url }),
     ...(event && { event }),
   });
   return NextResponse.json({ message: "Webhook updated" });
+};
+
+export const GET = async (
+  req: Request,
+  { params }: { params: { id: string } }
+) => {
+  const { id } = params;
+  const address = req.headers.get("x-address")!;
+  const user = await getUserByAddress(address)!;
+  if (!user) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+  }
+  const webhook = await getWebhookById(id, user.id);
+  if (!webhook || webhook.userId !== user.id) {
+    return NextResponse.json({ error: "Webhook not found" }, { status: 404 });
+  }
+  return NextResponse.json({ webhook });
 };

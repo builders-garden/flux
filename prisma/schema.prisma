@@ -55,24 +55,18 @@ model PaymentLink {
   user            User     @relation(fields: [userId], references: [id])
 }
 
-enum WebhookEventType {
-  PAYMENT_SUCCESSFUL
-  CUSTOMER_CREATED
-  SUBSCRIPTION_CREATED
-  SUBSCRIPTION_CANCELLED
-}
-
 model Webhook {
   id        String            @id @default(uuid())
   name      String
   url       String
-  eventType     WebhookEventType
+  createdAt DateTime          @default(now())
+  updatedAt DateTime
   userId    String
+  eventType WebhookEventType
   user      User              @relation(fields: [userId], references: [id])
   eventLogs WebhookEventLog[]
 
   @@unique([userId, eventType])
-
 }
 
 model WebhookEventLog {
@@ -141,6 +135,13 @@ model Subscription {
   product           Product  @relation(fields: [productId], references: [id])
 }
 
+enum WebhookEventType {
+  PAYMENT_SUCCESSFUL
+  CUSTOMER_CREATED
+  SUBSCRIPTION_CREATED
+  SUBSCRIPTION_CANCELLED
+}
+
 enum PaymentMethod {
   RECURRING
   ONE_TIME
@@ -155,4 +156,3 @@ enum WebhookEventLogStatus {
   TIMEOUT
   UNKNOWN
 }
-

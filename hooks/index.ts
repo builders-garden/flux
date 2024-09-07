@@ -5,4 +5,5 @@ export * from "./use-pimlico";
 export * from "./use-products";
 export * from "./use-subscriptions";
 export * from "./use-transactions";
+export * from "./use-webhook";
 export * from "./use-webhooks";

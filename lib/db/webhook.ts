@@ -32,10 +32,13 @@ export async function deleteWebhook(id: string) {
   }
 }
 
-export async function getWebhookById(id: string) {
+export async function getWebhookById(id: string, userId: string) {
   try {
     const webhook = await prisma.webhook.findUnique({
-      where: { id },
+      where: { id, userId },
+      include: {
+        eventLogs: true,
+      },
     });
     return webhook;
   } catch (error) {

@@ -121,7 +121,9 @@ export default function CreateWebhookModal({
                 Close
               </Button>
               <Button
-                isDisabled={!name || !selectedEvent || !webhookUrl || loading}
+                isDisabled={
+                  !name || selectedEvent.size === 0 || !webhookUrl || loading
+                }
                 isLoading={loading}
                 color="primary"
                 onPress={() => createWebhook(onClose)}
