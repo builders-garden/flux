@@ -57,5 +57,5 @@ export const GET = async (
   if (!webhook || webhook.userId !== user.id) {
     return NextResponse.json({ error: "Webhook not found" }, { status: 404 });
   }
-  return NextResponse.json({ webhook });
+  return NextResponse.json(webhook);
 };

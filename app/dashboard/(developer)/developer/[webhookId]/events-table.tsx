@@ -9,50 +9,21 @@ import {
   TableCell,
   Input,
   Pagination,
-  Button,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
-  useDisclosure,
   Chip,
 } from "@nextui-org/react";
 import { columns } from "./data";
-import {
-  LogsIcon,
-  MoreVerticalIcon,
-  PlusIcon,
-  SearchIcon,
-  Trash2Icon,
-} from "lucide-react";
-import { Webhook } from "@prisma/client";
-import { useWebhooksStore } from "@/lib/store";
-import DeleteWebhooModal from "@/components/modals/webhooks/delete-webhook-modal";
-import CreateWebhookModal from "@/components/modals/webhooks/create-webhook-modal";
-import Link from "next/link";
+import { SearchIcon } from "lucide-react";
+import { WebhookEventLog } from "@prisma/client";
 
 const INITIAL_VISIBLE_COLUMNS = [
-  "name",
-  "url",
-  "eventType",
+  "status",
+  "statusCode",
+  //   "payload",
+  //   "response",
   "createdAt",
-  "actions",
 ];
 
-export default function WebhooksTable({
-  webhooks,
-  refetch,
-}: {
-  webhooks: Webhook[];
-  refetch: () => void;
-}) {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const {
-    isOpen: isDeleteModalOpen,
-    onOpen: onDeleteModalOpen,
-    onOpenChange: onDeleteModalOpenChange,
-  } = useDisclosure();
-  const setDeleteWebhook = useWebhooksStore((state) => state.setDeleteWebhook);
+export default function EventsTable({ events }: { events: WebhookEventLog[] }) {
   const [filterValue, setFilterValue] = React.useState("");
   const [visibleColumns] = React.useState(new Set(INITIAL_VISIBLE_COLUMNS));
   const [statusFilter] = React.useState("all");
@@ -68,16 +39,16 @@ export default function WebhooksTable({
   }, [visibleColumns]);
 
   const filteredItems = React.useMemo(() => {
-    let filteredWebhooks = [...webhooks];
+    let filteredWebhooks = [...events];
 
     if (hasSearchFilter) {
-      filteredWebhooks = filteredWebhooks.filter((user) =>
-        user.name.toLowerCase().includes(filterValue.toLowerCase())
+      filteredWebhooks = filteredWebhooks.filter((event) =>
+        event.status.toLowerCase().includes(filterValue.toLowerCase())
       );
     }
 
     return filteredWebhooks;
-  }, [webhooks, filterValue, statusFilter]);
+  }, [events, filterValue, statusFilter]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
@@ -88,56 +59,42 @@ export default function WebhooksTable({
     return filteredItems.slice(start, end);
   }, [page, filteredItems, rowsPerPage]);
 
-  const renderCell = React.useCallback((webhook: Webhook, columnKey: Key) => {
-    // @ts-expect-error - Fix this
-    const cellValue = webhook[columnKey];
+  const renderCell = React.useCallback(
+    (event: WebhookEventLog, columnKey: Key) => {
+      // @ts-expect-error - Fix this
+      const cellValue = event[columnKey];
 
-    if (cellValue instanceof Date) {
-      return cellValue;
-    }
-    switch (columnKey) {
-      case "eventType":
-        return (
-          <Chip color="primary" size="sm">
-            {cellValue.replace("-", " ")}
-          </Chip>
-        );
-      case "actions":
-        return (
-          <Dropdown>
-            <DropdownTrigger>
-              <Button isIconOnly variant="light" size="sm">
-                <MoreVerticalIcon size={14} />
-              </Button>
-            </DropdownTrigger>
-            <DropdownMenu aria-label="Static Actions">
-              <DropdownItem
-                startContent={<LogsIcon size={14} />}
-                key="logs"
-                as={Link}
-                href={`/dashboard/developer/${webhook.id}`}
-              >
-                View logs
-              </DropdownItem>
-              <DropdownItem
-                startContent={<Trash2Icon size={14} />}
-                key="delete"
-                className="text-danger"
-                color="danger"
-                onClick={() => {
-                  setDeleteWebhook(webhook);
-                  onDeleteModalOpen();
-                }}
-              >
-                Delete
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
-        );
-      default:
+      if (cellValue instanceof Date) {
         return cellValue;
-    }
-  }, []);
+      }
+      switch (columnKey) {
+        case "statusCode":
+          const code = parseInt(cellValue);
+          if (code < 300) {
+            return (
+              <Chip color="success" size="sm">
+                {code}
+              </Chip>
+            );
+          } else if (code < 500) {
+            return (
+              <Chip color="warning" size="sm">
+                {code}
+              </Chip>
+            );
+          } else {
+            return (
+              <Chip color="danger" size="sm">
+                {code}
+              </Chip>
+            );
+          }
+        default:
+          return cellValue;
+      }
+    },
+    []
+  );
 
   const onRowsPerPageChange = React.useCallback((e: unknown) => {
     // @ts-expect-error - Fix this
@@ -172,17 +129,10 @@ export default function WebhooksTable({
             onClear={() => onClear()}
             onValueChange={onSearchChange}
           />
-          <Button
-            startContent={<PlusIcon />}
-            color="primary"
-            onClick={() => onOpen()}
-          >
-            Create webhook
-          </Button>
         </div>
         <div className="flex justify-between items-center">
           <span className="text-default-400 text-small">
-            Total {webhooks.length} webhooks
+            Total {events.length} events
           </span>
           <label className="flex items-center text-default-400 text-small">
             Links per page:
@@ -203,13 +153,13 @@ export default function WebhooksTable({
     statusFilter,
     visibleColumns,
     onRowsPerPageChange,
-    webhooks.length,
+    events.length,
     onSearchChange,
     hasSearchFilter,
   ]);
 
   const bottomContent = React.useMemo(() => {
-    if (webhooks.length === 0) {
+    if (events.length === 0) {
       return <div />;
     }
     return (
@@ -253,7 +203,7 @@ export default function WebhooksTable({
             </TableColumn>
           )}
         </TableHeader>
-        <TableBody emptyContent={"No webhooks found"} items={items}>
+        <TableBody emptyContent={"No events found"} items={items}>
           {(item) => (
             <TableRow key={item.id}>
               {(columnKey) => (
@@ -263,18 +213,6 @@ export default function WebhooksTable({
           )}
         </TableBody>
       </Table>
-      <CreateWebhookModal
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
-        onOpen={onOpen}
-        onModalClose={refetch}
-      />
-      <DeleteWebhooModal
-        isOpen={isDeleteModalOpen}
-        onOpenChange={onDeleteModalOpenChange}
-        onOpen={onDeleteModalOpen}
-        onModalClose={refetch}
-      />
     </>
   );
 }
