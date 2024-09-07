@@ -6,14 +6,12 @@ const prisma = new PrismaClient();
 export async function createUser(
   address: string,
   email: string,
-  smartAccountAddress: string
 ) {
   try {
     const newUser = await prisma.user.create({
       data: {
         address,
         email,
-        smartAccountAddress,
       },
     });
     return newUser;
