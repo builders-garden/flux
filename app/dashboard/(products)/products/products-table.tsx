@@ -36,7 +36,7 @@ import { usePrivy } from "@privy-io/react-auth";
 const INITIAL_VISIBLE_COLUMNS = [
   "name",
   "price",
-  "paymentMethid",
+  // "paymentMethod",
   "createdAt",
   "actions",
 ];
@@ -129,6 +129,9 @@ export default function ProductsTable({
           </div>
         );
       case "price":
+        if (product.paymentMethod === "RECURRING") {
+          return `$${cellValue} / month`;
+        }
         return `$${cellValue}`;
       case "actions":
         return (

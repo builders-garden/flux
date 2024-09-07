@@ -10,6 +10,7 @@ import {
   SelectItem,
   Select,
 } from "@nextui-org/react";
+import { PaymentMethod } from "@prisma/client";
 import { usePrivy } from "@privy-io/react-auth";
 import {
   CircleDollarSignIcon,
@@ -20,7 +21,7 @@ import {
 import { useState } from "react";
 
 type Method = {
-  id: string;
+  id: PaymentMethod;
   name: string;
 };
 
@@ -142,11 +143,11 @@ export default function CreateProductModal({
               <Select
                 items={[
                   {
-                    id: "one-time",
+                    id: PaymentMethod.ONE_TIME,
                     name: "One time payment",
                   },
                   {
-                    id: "monthly",
+                    id: PaymentMethod.RECURRING,
                     name: "Each month",
                   },
                 ]}

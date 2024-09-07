@@ -15,7 +15,7 @@ import { SearchIcon } from "lucide-react";
 import { shortenAddress } from "@/lib/utils";
 import { Customer, Transaction } from "@prisma/client";
 
-const INITIAL_VISIBLE_COLUMNS = ["hash", "_count", "createdAt", "customer"];
+const INITIAL_VISIBLE_COLUMNS = ["hash", "amount", "createdAt", "customer"];
 
 type TransactionWithCustomer = Transaction & { customer: Customer };
 
