@@ -1,37 +1,12 @@
 "use client";
-
-import { usePrivy } from "@privy-io/react-auth";
 import ProductsTable from "./products-table";
-import { useEffect, useState } from "react";
 import { Skeleton } from "@nextui-org/react";
+import { useProducts } from "@/hooks";
 
 export default function ProductsPage() {
-  const { getAccessToken } = usePrivy();
-  const [loading, setLoading] = useState<boolean>(true);
-  const [products, setProducts] = useState<any[]>([]);
+  const { isPending, products, refetch } = useProducts();
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const fetchProducts = async () => {
-    try {
-      const accessToken = await getAccessToken();
-      const response = await fetch("/api/products", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      const products = await response.json();
-      setProducts(products);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
+  if (isPending) {
     return (
       <section className="flex flex-col space-y-4">
         <h1 className="text-3xl font-bold">Products</h1>
@@ -62,7 +37,7 @@ export default function ProductsPage() {
   return (
     <section className="flex flex-col space-y-4">
       <h1 className="text-3xl font-bold">Products</h1>
-      <ProductsTable products={products} />
+      <ProductsTable products={products} refetch={refetch} />
     </section>
   );
 }

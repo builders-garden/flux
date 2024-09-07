@@ -15,6 +15,7 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
+  useDisclosure,
 } from "@nextui-org/react";
 import { columns } from "./data";
 import {
@@ -26,10 +27,33 @@ import {
   SearchIcon,
   Trash2Icon,
 } from "lucide-react";
+import CreateProductModal from "@/components/modals/products/create-product-modal";
+import DeleteProductModal from "@/components/modals/products/delete-product-modal";
+import { useProductsStore } from "@/lib/store";
+import UpdateProductModal from "@/components/modals/products/update-product-modal";
 
-const INITIAL_VISIBLE_COLUMNS = ["name", "price", "creationDate", "actions"];
+const INITIAL_VISIBLE_COLUMNS = ["name", "price", "createdAt", "actions"];
 
-export default function ProductsTable({ products }: { products: any[] }) {
+export default function ProductsTable({
+  products,
+  refetch,
+}: {
+  products: any[];
+  refetch: () => void;
+}) {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const {
+    isOpen: isDeleteModalOpen,
+    onOpen: onDeleteModalOpen,
+    onOpenChange: onDeleteModalOpenChange,
+  } = useDisclosure();
+  const {
+    isOpen: isUpdateModalOpen,
+    onOpen: onUpdateModalOpen,
+    onOpenChange: onUpdateModalOpenChange,
+  } = useDisclosure();
+  const setUpdateProduct = useProductsStore((state) => state.setUpdateProduct);
+  const setDeleteProduct = useProductsStore((state) => state.setDeleteProduct);
   const [filterValue, setFilterValue] = React.useState("");
   const [visibleColumns] = React.useState(new Set(INITIAL_VISIBLE_COLUMNS));
   const [statusFilter] = React.useState("all");
@@ -72,8 +96,8 @@ export default function ProductsTable({ products }: { products: any[] }) {
       case "name":
         return (
           <div className="flex flex-row space-x-2 items-center">
-            {product.image ? (
-              <Avatar size="md" radius="lg" src={product.image} />
+            {product.imageUrl ? (
+              <Avatar size="md" radius="lg" src={product.imageUrl} />
             ) : (
               <Avatar size="md" radius="lg" icon={<BoxIcon color="grey" />} />
             )}
@@ -91,7 +115,14 @@ export default function ProductsTable({ products }: { products: any[] }) {
               </Button>
             </DropdownTrigger>
             <DropdownMenu aria-label="Static Actions">
-              <DropdownItem startContent={<PencilIcon size={14} />} key="edit">
+              <DropdownItem
+                startContent={<PencilIcon size={14} />}
+                key="edit"
+                onClick={() => {
+                  setUpdateProduct(product);
+                  onUpdateModalOpen();
+                }}
+              >
                 Edit
               </DropdownItem>
               <DropdownItem
@@ -105,6 +136,10 @@ export default function ProductsTable({ products }: { products: any[] }) {
                 key="delete"
                 className="text-danger"
                 color="danger"
+                onClick={() => {
+                  setDeleteProduct(product);
+                  onDeleteModalOpen();
+                }}
               >
                 Delete
               </DropdownItem>
@@ -148,7 +183,7 @@ export default function ProductsTable({ products }: { products: any[] }) {
             onClear={() => onClear()}
             onValueChange={onSearchChange}
           />
-          <Button startContent={<PlusIcon />} color="primary">
+          <Button startContent={<PlusIcon />} color="primary" onClick={onOpen}>
             Add product
           </Button>
         </div>
@@ -199,37 +234,56 @@ export default function ProductsTable({ products }: { products: any[] }) {
   }, [items.length, page, pages, hasSearchFilter]);
 
   return (
-    <Table
-      aria-label="Example table with custom cells, pagination and sorting"
-      isHeaderSticky
-      bottomContent={bottomContent}
-      bottomContentPlacement="outside"
-      classNames={{
-        wrapper: "max-h-[382px]",
-      }}
-      topContent={topContent}
-      topContentPlacement="outside"
-    >
-      <TableHeader columns={headerColumns}>
-        {(column) => (
-          <TableColumn
-            key={column.uid}
-            align={column.uid === "actions" ? "center" : "start"}
-            // allowsSorting={column.sortable}
-          >
-            {column.name}
-          </TableColumn>
-        )}
-      </TableHeader>
-      <TableBody emptyContent={"No products found"} items={items}>
-        {(item) => (
-          <TableRow key={item.id}>
-            {(columnKey) => (
-              <TableCell>{renderCell(item, columnKey)}</TableCell>
-            )}
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
+    <>
+      <Table
+        aria-label="Example table with custom cells, pagination and sorting"
+        isHeaderSticky
+        bottomContent={bottomContent}
+        bottomContentPlacement="outside"
+        classNames={{
+          wrapper: "max-h-[382px]",
+        }}
+        topContent={topContent}
+        topContentPlacement="outside"
+      >
+        <TableHeader columns={headerColumns}>
+          {(column) => (
+            <TableColumn
+              key={column.uid}
+              align={column.uid === "actions" ? "center" : "start"}
+            >
+              {column.name}
+            </TableColumn>
+          )}
+        </TableHeader>
+        <TableBody emptyContent={"No products found"} items={items}>
+          {(item) => (
+            <TableRow key={item.id}>
+              {(columnKey) => (
+                <TableCell>{renderCell(item, columnKey)}</TableCell>
+              )}
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+      <CreateProductModal
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        onOpen={onOpen}
+        onModalClose={refetch}
+      />
+      <UpdateProductModal
+        isOpen={isUpdateModalOpen}
+        onOpenChange={onUpdateModalOpenChange}
+        onOpen={onUpdateModalOpen}
+        onModalClose={refetch}
+      />
+      <DeleteProductModal
+        isOpen={isDeleteModalOpen}
+        onOpenChange={onDeleteModalOpenChange}
+        onOpen={onDeleteModalOpen}
+        onModalClose={refetch}
+      />
+    </>
   );
 }

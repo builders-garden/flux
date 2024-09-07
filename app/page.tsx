@@ -7,8 +7,19 @@ import { useRouter } from "next/navigation";
 export default function Home() {
   const router = useRouter();
   const { login } = useLogin({
-    onComplete: (user, isNewUser) => {
-      console.log(user, isNewUser);
+    onComplete: async (user, isNewUser) => {
+      if (isNewUser) {
+        await fetch("/api/users", {
+          method: "POST",
+          body: JSON.stringify({
+            email: user.email?.address,
+            address: user.wallet?.address,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+      }
       router.push("/dashboard");
     },
   });

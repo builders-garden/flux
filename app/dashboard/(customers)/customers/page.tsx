@@ -1,36 +1,12 @@
 "use client";
 import { Skeleton } from "@nextui-org/react";
-import { usePrivy } from "@privy-io/react-auth";
-import { useState, useEffect } from "react";
 import CustomersTable from "./customers-table";
+import { useCustomers } from "@/hooks";
 
 export default function CustomersPage() {
-  const { getAccessToken } = usePrivy();
-  const [loading, setLoading] = useState<boolean>(true);
-  const [users, setUsers] = useState<any[]>([]);
+  const { isPending, customers } = useCustomers();
 
-  useEffect(() => {
-    fetchCustomers();
-  }, []);
-
-  const fetchCustomers = async () => {
-    try {
-      const accessToken = await getAccessToken();
-      const response = await fetch("/api/customers", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      const customers = await response.json();
-      setUsers(customers);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
+  if (isPending) {
     return (
       <section className="flex flex-col space-y-4">
         <h1 className="text-3xl font-bold">Customers</h1>
@@ -55,7 +31,7 @@ export default function CustomersPage() {
   return (
     <section className="flex flex-col space-y-4">
       <h1 className="text-3xl font-bold">Customers</h1>
-      <CustomersTable users={users} />
+      <CustomersTable users={customers} />
     </section>
   );
 }

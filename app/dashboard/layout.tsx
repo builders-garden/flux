@@ -74,8 +74,6 @@ export default function DashboardLayout({
     onSuccess: () => router.replace("/"),
   });
 
-  console.log(user);
-
   if (!user || !user.wallet) {
     return (
       <section>

@@ -1,37 +1,13 @@
 "use client";
 
 import { Skeleton } from "@nextui-org/react";
-import { usePrivy } from "@privy-io/react-auth";
-import { useState, useEffect } from "react";
 import TransactionsTable from "./transactions-table";
+import { useTransactions } from "@/hooks";
 
 export default function TransactionsPage() {
-  const { getAccessToken } = usePrivy();
-  const [loading, setLoading] = useState<boolean>(true);
-  const [transactions, setTransactions] = useState<any[]>([]);
+  const { isPending, transactions } = useTransactions();
 
-  useEffect(() => {
-    fetchTransactions();
-  }, []);
-
-  const fetchTransactions = async () => {
-    try {
-      const accessToken = await getAccessToken();
-      const response = await fetch("/api/transactions", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      const txs = await response.json();
-      setTransactions(txs);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
+  if (isPending) {
     return (
       <section className="flex flex-col space-y-4">
         <h1 className="text-3xl font-bold">Transactions</h1>

@@ -134,6 +134,9 @@ export default function TransactionsTable({
   ]);
 
   const bottomContent = React.useMemo(() => {
+    if (transactions.length === 0) {
+      return <div />;
+    }
     return (
       <div className="py-2 px-2 flex justify-between items-center">
         <span className="w-[30%] text-small text-default-400"></span>
