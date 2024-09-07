@@ -29,3 +29,29 @@ export async function publishToQstash(
     return { response: "ko" };
   }
 }
+
+export const relayTransactionCreation = async (data: {
+  userId: string;
+  productId: string;
+  hash: string;
+  amount: number;
+  fromAddress: string;
+  timestamp: number;
+}) => {
+  await publishToQstash(
+    `${process.env.BASE_URL}/api/qstash/workers/transactions`,
+    data,
+    0
+  );
+};
+
+export const relayWebhookEvent = async (data: {
+  webhookId: string;
+  data: { [key: string]: unknown };
+}) => {
+  await publishToQstash(
+    `${process.env.BASE_URL}/api/qstash/workers/webhook-events`,
+    data,
+    0
+  );
+};
