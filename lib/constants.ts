@@ -1,6 +1,13 @@
-export const USDC_BASE_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+export const USDC_BASE_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
 
-export const TOKENS = [
+export interface Token {
+  symbol: string;
+  chainId: number;
+  chainName: string;
+  address: string;
+}
+
+export const TOKENS: Token[] = [
   // Optimism (Chain ID: 10)
   {
     symbol: "USDC",
@@ -26,7 +33,7 @@ export const TOKENS = [
     chainName: "Optimism",
     address: "0x0000000000000000000000000000000000000000",
   },
-  
+
   // Base (Chain ID: 8453)
   {
     symbol: "USDC",
@@ -46,7 +53,7 @@ export const TOKENS = [
     chainName: "Base",
     address: "0x0000000000000000000000000000000000000000",
   },
-  
+
   // Celo (Chain ID: 42220)
   {
     symbol: "cUSD",
@@ -78,7 +85,7 @@ export const TOKENS = [
     chainName: "Celo",
     address: "0x122013fd7df1c6f636a5bb8f03108e876548b455",
   },
-  
+
   // Mantle (Chain ID: 5000)
   {
     symbol: "USDC",
@@ -104,7 +111,7 @@ export const TOKENS = [
     chainName: "Mantle",
     address: "0x0000000000000000000000000000000000000000",
   },
-  
+
   // Blast (Chain ID: 81457)
   {
     symbol: "USDB",
@@ -130,4 +137,4 @@ export const TOKENS = [
     chainName: "Blast",
     address: "0xb1a5700fA2358173Fe465e6eA4Ff52E36e88E2ad",
   },
-]
+];
