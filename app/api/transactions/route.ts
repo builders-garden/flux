@@ -1,43 +1,28 @@
-import { createCustomer, getCustomerByAddress } from "@/lib/db/customer";
-import {
-  createTransaction,
-  getTransactionsByUserId,
-} from "@/lib/db/transactions";
+import { getTransactionsByUserId } from "@/lib/db/transactions";
 import { getUserByAddress } from "@/lib/db/users";
-import { Customer } from "@prisma/client";
+import { publishToQstash } from "@/lib/qstash";
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (req: NextRequest) => {
   const body = await req.json();
   const { userId, productId, hash, amount, fromAddress, timestamp } = body;
-  let customer: Customer | null;
-  try {
-    customer = await getCustomerByAddress(fromAddress);
-  } catch (e) {
-    customer = await createCustomer(fromAddress, userId);
-  }
 
-  if (!customer) {
-    return NextResponse.json(
-      {
-        message: "Error finding customer",
-      },
-      {
-        status: 400,
-      }
-    );
-  }
+  await publishToQstash(
+    `${process.env.BASE_URL}/api/qstash/workers/transactions`,
+    {
+      userId,
+      productId,
+      hash,
+      amount,
+      fromAddress,
+      timestamp,
+    },
+    0
+  );
 
-  const transaction = await createTransaction({
-    hash,
-    amount,
-    customerId: customer?.id,
-    productId,
-    timestamp: new Date(timestamp),
-    userId,
+  return NextResponse.json({
+    message: "Transaction creation added to queue",
   });
-
-  return NextResponse.json(transaction);
 };
 
 export const GET = async (req: NextRequest) => {
