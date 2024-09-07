@@ -4,14 +4,18 @@ import { prisma } from "./index"
 export async function createPaymentLink(
   userId: string,
   productId: string,
-  link: string
+  name: string,
+  slug: string,
+  requiresWorldId: boolean
 ) {
   try {
     const newPaymentLink = await prisma.paymentLink.create({
       data: {
         userId,
         productId,
-        link,
+        slug,
+        name,
+        requiresWorldId,
       },
     });
     return newPaymentLink;
@@ -26,7 +30,9 @@ export async function createPaymentLink(
 export async function updatePaymentLink(
   id: string,
   data: {
-    link?: string;
+    name?: string;
+    slug?: string;
+    requiresWorldId?: boolean;
   }
 ) {
   try {
@@ -102,6 +108,24 @@ export async function deletePaymentLink(id: string) {
     });
   } catch (error) {
     console.error('Error deleting payment link:', error);
+    throw error;
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
+export async function getPaymentLinkBySlug(slug: string) {
+  try {
+    const paymentLink = await prisma.paymentLink.findUnique({
+      where: { slug },
+      include: {
+        user: true,
+        product: true,
+      },
+    });
+    return paymentLink;
+  } catch (error) {
+    console.error('Error fetching payment link:', error);
     throw error;
   } finally {
     await prisma.$disconnect();
