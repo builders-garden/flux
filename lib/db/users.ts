@@ -64,11 +64,7 @@ export async function getUserWithRelations(userId: string) {
 export async function getUserById(id: string) {
   try {
     const user = await prisma.user.findUnique({
-      where: { id },
-      include: {
-        products: true,
-        paymentLinks: true,
-      },
+      where: { id }
     });
     return user;
   } catch (error) {
@@ -83,10 +79,6 @@ export async function getUserByAddress(address: string) {
   try {
     const user = await prisma.user.findUnique({
       where: { address },
-      include: {
-        products: true,
-        paymentLinks: true,
-      },
     });
     return user;
   } catch (error) {
@@ -101,10 +93,6 @@ export async function getUserByEmail(email: string) {
   try {
     const user = await prisma.user.findUnique({
       where: { email },
-      include: {
-        products: true,
-        paymentLinks: true,
-      },
     });
     return user;
   } catch (error) {
