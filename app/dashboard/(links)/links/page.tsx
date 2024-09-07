@@ -4,7 +4,7 @@ import LinksTable from "./links-table";
 import { usePaymentLinks } from "@/hooks";
 
 export default function PaymentLinksPage() {
-  const { isPending, links } = usePaymentLinks();
+  const { isPending, links, refetch } = usePaymentLinks();
 
   if (isPending) {
     return (
@@ -36,7 +36,7 @@ export default function PaymentLinksPage() {
   return (
     <section className="flex flex-col space-y-4">
       <h1 className="text-3xl font-bold">Payment Links</h1>
-      <LinksTable links={links} />
+      <LinksTable links={links} refetch={refetch} />
     </section>
   );
 }

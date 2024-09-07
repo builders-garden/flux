@@ -1,18 +1,11 @@
 const columns = [
   { name: "ID", uid: "id" },
   { name: "NAME", uid: "name" },
+  { name: "SLUG", uid: "slug" },
   { name: "PRODUCT", uid: "product" },
-  { name: "CREATION DATE", uid: "creationDate" },
+  { name: "CREATION DATE", uid: "createdAt" },
+  { name: "WORLD ID", uid: "requiresWorldId" },
   { name: "ACTIONS", uid: "actions" },
 ];
 
-const links = [
-  {
-    id: 1,
-    name: "Payment Link 1",
-    creationDate: "2021-10-01",
-    product: "Test product 1",
-  },
-];
-
-export { columns, links };
+export { columns };

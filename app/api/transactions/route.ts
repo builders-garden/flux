@@ -1,24 +1,20 @@
 import { getTransactionsByUserId } from "@/lib/db/transactions";
 import { getUserByAddress } from "@/lib/db/users";
-import { publishToQstash } from "@/lib/qstash";
+import { relayTransactionCreation } from "@/lib/qstash";
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (req: NextRequest) => {
   const body = await req.json();
   const { userId, productId, hash, amount, fromAddress, timestamp } = body;
 
-  await publishToQstash(
-    `${process.env.BASE_URL}/api/qstash/workers/transactions`,
-    {
-      userId,
-      productId,
-      hash,
-      amount,
-      fromAddress,
-      timestamp,
-    },
-    0
-  );
+  await relayTransactionCreation({
+    userId,
+    productId,
+    hash,
+    amount,
+    fromAddress,
+    timestamp,
+  });
 
   return NextResponse.json({
     message: "Transaction creation added to queue",

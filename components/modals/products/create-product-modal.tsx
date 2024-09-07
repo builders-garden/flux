@@ -10,8 +10,8 @@ import {
 } from "@nextui-org/react";
 import { usePrivy } from "@privy-io/react-auth";
 import {
-  BoxIcon,
   CircleDollarSignIcon,
+  PackageIcon,
   TextIcon,
   UploadCloudIcon,
 } from "lucide-react";
@@ -94,7 +94,7 @@ export default function CreateProductModal({
               <Input
                 autoFocus
                 endContent={
-                  <BoxIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                  <PackageIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
                 }
                 label="Name"
                 placeholder="Awesome sneakers"

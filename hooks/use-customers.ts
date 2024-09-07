@@ -13,7 +13,8 @@ export const useCustomers = () => {
             Authorization: `Bearer ${accessToken}`,
           },
         });
-        return await response.json();
+        const { customers } = await response.json();
+        return customers;
       } catch (error) {
         return [];
       }

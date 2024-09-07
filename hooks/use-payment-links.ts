@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export const usePaymentLinks = () => {
   const { getAccessToken } = usePrivy();
-  const { isPending, error, data } = useQuery({
+  const { isPending, error, data, refetch, isRefetching } = useQuery({
     queryKey: ["payment-links"],
     queryFn: async () => {
       try {
@@ -20,5 +20,5 @@ export const usePaymentLinks = () => {
     },
   });
 
-  return { isPending, error, links: data };
+  return { isPending: isPending || isRefetching, error, links: data, refetch };
 };

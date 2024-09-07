@@ -19,7 +19,7 @@ import {
 } from "@nextui-org/react";
 import { columns } from "./data";
 import {
-  BoxIcon,
+  PackageIcon,
   CopyIcon,
   MoreVerticalIcon,
   PencilIcon,
@@ -31,6 +31,7 @@ import CreateProductModal from "@/components/modals/products/create-product-moda
 import DeleteProductModal from "@/components/modals/products/delete-product-modal";
 import { useProductsStore } from "@/lib/store";
 import UpdateProductModal from "@/components/modals/products/update-product-modal";
+import { usePrivy } from "@privy-io/react-auth";
 
 const INITIAL_VISIBLE_COLUMNS = ["name", "price", "createdAt", "actions"];
 
@@ -41,6 +42,7 @@ export default function ProductsTable({
   products: any[];
   refetch: () => void;
 }) {
+  const { getAccessToken } = usePrivy();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const {
     isOpen: isDeleteModalOpen,
@@ -89,6 +91,18 @@ export default function ProductsTable({
     return filteredItems.slice(start, end);
   }, [page, filteredItems, rowsPerPage]);
 
+  const duplicateProduct = async (productId: string) => {
+    await fetch(`/api/products?productId=${productId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${await getAccessToken()}`,
+      },
+    });
+
+    await refetch();
+  };
+
   const renderCell = React.useCallback((product: any, columnKey: any) => {
     const cellValue = product[columnKey];
 
@@ -99,7 +113,11 @@ export default function ProductsTable({
             {product.imageUrl ? (
               <Avatar size="md" radius="lg" src={product.imageUrl} />
             ) : (
-              <Avatar size="md" radius="lg" icon={<BoxIcon color="grey" />} />
+              <Avatar
+                size="md"
+                radius="lg"
+                icon={<PackageIcon color="grey" />}
+              />
             )}
             <p className="font-bold">{cellValue}</p>
           </div>
@@ -128,6 +146,7 @@ export default function ProductsTable({
               <DropdownItem
                 startContent={<CopyIcon size={14} />}
                 key="duplicate"
+                onClick={() => duplicateProduct(product.id)}
               >
                 Duplicate
               </DropdownItem>
@@ -216,6 +235,9 @@ export default function ProductsTable({
   ]);
 
   const bottomContent = React.useMemo(() => {
+    if (products.length === 0) {
+      return <div />;
+    }
     return (
       <div className="py-2 px-2 flex justify-between items-center">
         <span className="w-[30%] text-small text-default-400"></span>

@@ -1,11 +1,28 @@
 import {
   deletePaymentLink,
   getPaymentLink,
+  getPaymentLinkBySlug,
   updatePaymentLink,
 } from "@/lib/db/paymentLinks";
 import { getUserByAddress } from "@/lib/db/users";
 import { nameToSlug } from "@/lib/utils";
 import { NextRequest, NextResponse } from "next/server";
+
+export const GET = async (
+  req: NextRequest,
+  { params: { id } }: { params: { id: string } }
+) => {
+  const paymentLink = await getPaymentLinkBySlug(id);
+
+  if (!paymentLink) {
+    return NextResponse.json(
+      { error: "Payment link not found" },
+      { status: 404 }
+    );
+  }
+
+  return NextResponse.json(paymentLink);
+};
 
 export const PUT = async (
   req: NextRequest,

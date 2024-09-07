@@ -11,12 +11,12 @@ import {
 } from "@nextui-org/react";
 import { useLogout, usePrivy } from "@privy-io/react-auth";
 import {
-  BoxesIcon,
   CogIcon,
   CreditCardIcon,
   HomeIcon,
   LinkIcon,
   LogOutIcon,
+  PackageSearchIcon,
   Repeat2Icon,
   Users2Icon,
 } from "lucide-react";
@@ -53,7 +53,7 @@ const menuItems: MenuItem[] = [
   {
     label: "Products",
     href: "/dashboard/products",
-    icon: <BoxesIcon />,
+    icon: <PackageSearchIcon />,
   },
   {
     label: "Links",

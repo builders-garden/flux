@@ -14,20 +14,50 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
+  useDisclosure,
+  Chip,
 } from "@nextui-org/react";
 import { columns } from "./data";
 import {
+  CheckCircle2Icon,
   ClipboardCopyIcon,
   MoreVerticalIcon,
   PencilIcon,
   PlusIcon,
   SearchIcon,
   Trash2Icon,
+  XCircleIcon,
 } from "lucide-react";
+import CreatePaymentLinkModal from "@/components/modals/payment-links/create-payment-link-modal";
+import DeletePaymentLinkModal from "@/components/modals/payment-links/delete-payment-link-modal";
+import { usePaymentLinksStore } from "@/lib/store";
 
-const INITIAL_VISIBLE_COLUMNS = ["name", "product", "creationDate", "actions"];
+const INITIAL_VISIBLE_COLUMNS = [
+  "name",
+  "slug",
+  "paymentLink",
+  "product",
+  "requiresWorldId",
+  "createdAt",
+  "actions",
+];
 
-export default function LinksTable({ links }: { links: any[] }) {
+export default function LinksTable({
+  links,
+  refetch,
+}: {
+  links: any[];
+  refetch: () => void;
+}) {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const {
+    isOpen: isDeleteModalOpen,
+    onOpen: onDeleteModalOpen,
+    onOpenChange: onDeleteModalOpenChange,
+  } = useDisclosure();
+  const setDeletePaymentLink = usePaymentLinksStore(
+    (state) => state.setDeletePaymentLink
+  );
   const [filterValue, setFilterValue] = React.useState("");
   const [visibleColumns] = React.useState(new Set(INITIAL_VISIBLE_COLUMNS));
   const [statusFilter] = React.useState("all");
@@ -43,15 +73,15 @@ export default function LinksTable({ links }: { links: any[] }) {
   }, [visibleColumns]);
 
   const filteredItems = React.useMemo(() => {
-    let filteredProducts = [...links];
+    let filteredpaymentLinks = [...links];
 
     if (hasSearchFilter) {
-      filteredProducts = filteredProducts.filter((user) =>
+      filteredpaymentLinks = filteredpaymentLinks.filter((user) =>
         user.name.toLowerCase().includes(filterValue.toLowerCase())
       );
     }
 
-    return filteredProducts;
+    return filteredpaymentLinks;
   }, [links, filterValue, statusFilter]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
@@ -63,10 +93,37 @@ export default function LinksTable({ links }: { links: any[] }) {
     return filteredItems.slice(start, end);
   }, [page, filteredItems, rowsPerPage]);
 
-  const renderCell = React.useCallback((product: any, columnKey: any) => {
-    const cellValue = product[columnKey];
-
+  const renderCell = React.useCallback((paymentLink: any, columnKey: any) => {
+    const cellValue = paymentLink[columnKey];
+    console.log(paymentLink);
     switch (columnKey) {
+      case "name":
+        return <span className="font-bold">{cellValue}</span>;
+      case "requiresWorldId":
+        return cellValue ? (
+          <CheckCircle2Icon className="text-emerald-500" />
+        ) : (
+          <XCircleIcon className="text-red-500" />
+        );
+      case "slug":
+        return (
+          <Chip
+            className="cursor-pointer"
+            onClick={() => {
+              if (navigator && navigator.clipboard) {
+                navigator.clipboard.writeText(
+                  `http://localhost:3000/pay/${paymentLink.slug}`
+                );
+              }
+            }}
+            color="primary"
+            size="sm"
+          >
+            {cellValue}
+          </Chip>
+        );
+      case "product":
+        return paymentLink.product.name;
       case "actions":
         return (
           <Dropdown>
@@ -79,6 +136,13 @@ export default function LinksTable({ links }: { links: any[] }) {
               <DropdownItem
                 startContent={<ClipboardCopyIcon size={14} />}
                 key="clipboard"
+                onClick={() => {
+                  if (navigator && navigator.clipboard) {
+                    navigator.clipboard.writeText(
+                      `https://localhost:3000/pay/${paymentLink.slug}`
+                    );
+                  }
+                }}
               >
                 Copy to clipboard
               </DropdownItem>
@@ -90,6 +154,10 @@ export default function LinksTable({ links }: { links: any[] }) {
                 key="delete"
                 className="text-danger"
                 color="danger"
+                onClick={() => {
+                  setDeletePaymentLink(paymentLink);
+                  onDeleteModalOpen();
+                }}
               >
                 Delete
               </DropdownItem>
@@ -133,7 +201,7 @@ export default function LinksTable({ links }: { links: any[] }) {
             onClear={() => onClear()}
             onValueChange={onSearchChange}
           />
-          <Button startContent={<PlusIcon />} color="primary">
+          <Button startContent={<PlusIcon />} color="primary" onClick={onOpen}>
             Create link
           </Button>
         </div>
@@ -166,6 +234,9 @@ export default function LinksTable({ links }: { links: any[] }) {
   ]);
 
   const bottomContent = React.useMemo(() => {
+    if (links.length === 0) {
+      return <div />;
+    }
     return (
       <div className="py-2 px-2 flex justify-between items-center">
         <span className="w-[30%] text-small text-default-400"></span>
@@ -184,37 +255,51 @@ export default function LinksTable({ links }: { links: any[] }) {
   }, [items.length, page, pages, hasSearchFilter]);
 
   return (
-    <Table
-      aria-label="Example table with custom cells, pagination and sorting"
-      isHeaderSticky
-      bottomContent={bottomContent}
-      bottomContentPlacement="outside"
-      classNames={{
-        wrapper: "max-h-[382px]",
-      }}
-      topContent={topContent}
-      topContentPlacement="outside"
-    >
-      <TableHeader columns={headerColumns}>
-        {(column) => (
-          <TableColumn
-            key={column.uid}
-            align={column.uid === "actions" ? "center" : "start"}
-            // allowsSorting={column.sortable}
-          >
-            {column.name}
-          </TableColumn>
-        )}
-      </TableHeader>
-      <TableBody emptyContent={"No links found"} items={items}>
-        {(item) => (
-          <TableRow key={item.id}>
-            {(columnKey) => (
-              <TableCell>{renderCell(item, columnKey)}</TableCell>
-            )}
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
+    <>
+      <Table
+        aria-label="Example table with custom cells, pagination and sorting"
+        isHeaderSticky
+        bottomContent={bottomContent}
+        bottomContentPlacement="outside"
+        classNames={{
+          wrapper: "max-h-[382px]",
+        }}
+        topContent={topContent}
+        topContentPlacement="outside"
+      >
+        <TableHeader columns={headerColumns}>
+          {(column) => (
+            <TableColumn
+              key={column.uid}
+              align={column.uid === "actions" ? "center" : "start"}
+              // allowsSorting={column.sortable}
+            >
+              {column.name}
+            </TableColumn>
+          )}
+        </TableHeader>
+        <TableBody emptyContent={"No links found"} items={items}>
+          {(item) => (
+            <TableRow key={item.id}>
+              {(columnKey) => (
+                <TableCell>{renderCell(item, columnKey)}</TableCell>
+              )}
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+      <CreatePaymentLinkModal
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        onOpen={onOpen}
+        onModalClose={refetch}
+      />
+      <DeletePaymentLinkModal
+        isOpen={isDeleteModalOpen}
+        onOpenChange={onDeleteModalOpenChange}
+        onOpen={onDeleteModalOpen}
+        onModalClose={refetch}
+      />
+    </>
   );
 }

@@ -4,6 +4,8 @@ import { NextUIProvider } from "@nextui-org/react";
 import React from "react";
 import { PrivyProvider } from "@privy-io/react-auth";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { WagmiProvider } from "@privy-io/wagmi";
+import { wagmiConfig } from "@/lib/wagmi";
 
 const queryClient = new QueryClient();
 
@@ -23,7 +25,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         }}
       >
         <QueryClientProvider client={queryClient}>
-          <main className="h-full">{children}</main>
+          <WagmiProvider config={wagmiConfig}>
+            <main className="h-full">{children}</main>
+          </WagmiProvider>
         </QueryClientProvider>
       </PrivyProvider>
     </NextUIProvider>

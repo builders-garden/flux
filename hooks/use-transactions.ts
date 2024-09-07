@@ -13,7 +13,8 @@ export const useTransactions = () => {
             Authorization: `Bearer ${accessToken}`,
           },
         });
-        return await response.json();
+        const { transactions } = await response.json();
+        return transactions;
       } catch (error) {
         return [];
       }

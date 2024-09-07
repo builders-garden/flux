@@ -1,7 +1,9 @@
+import { useProductsStore } from "@/lib/store";
 import { usePrivy } from "@privy-io/react-auth";
 import { useQuery } from "@tanstack/react-query";
 
 export const useProducts = () => {
+  const setProducts = useProductsStore((state) => state.setProducts);
   const { getAccessToken } = usePrivy();
   const { isPending, error, data, refetch, isRefetching } = useQuery({
     queryKey: ["products"],
@@ -13,7 +15,9 @@ export const useProducts = () => {
             Authorization: `Bearer ${accessToken}`,
           },
         });
-        return await response.json();
+        const products = await response.json();
+        setProducts(products);
+        return products;
       } catch (error) {
         return [];
       }

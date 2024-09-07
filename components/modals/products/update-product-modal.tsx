@@ -11,7 +11,7 @@ import {
 } from "@nextui-org/react";
 import { usePrivy } from "@privy-io/react-auth";
 import {
-  BoxIcon,
+  PackageIcon,
   CircleDollarSignIcon,
   TextIcon,
   UploadCloudIcon,
@@ -110,7 +110,7 @@ export default function UpdateProductModal({
               <Input
                 autoFocus
                 endContent={
-                  <BoxIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                  <PackageIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
                 }
                 label="Name"
                 placeholder="Awesome sneakers"

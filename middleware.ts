@@ -1,5 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { verifyAuthToken } from "./lib/privy";
+import { Receiver } from "@upstash/qstash";
 
 export const config = {
   matcher: "/api/:function*",
@@ -13,6 +14,33 @@ export async function middleware(req: NextRequest) {
 
   if (req.url.includes("/api/users") && req.method === "POST") {
     // If the request is for the user creation endpoint, continue processing the request
+    return NextResponse.next();
+  }
+
+  if (req.url.includes("/api/qstash/")) {
+    // If the request is for a QStash endpoint, check the signature
+    const receiver = new Receiver({
+      currentSigningKey: process.env.QSTASH_CURRENT_SIGNING_KEY!,
+      nextSigningKey: process.env.QSTASH_NEXT_SIGNING_KEY!,
+    });
+
+    const signature = req.headers.get("Upstash-Signature")!;
+    const body = await req.text();
+
+    try {
+      await receiver.verify({
+        body,
+        signature,
+      });
+    } catch (error) {
+      return NextResponse.json(
+        { success: false, message: `Invalid signature: ${error}` },
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
     return NextResponse.next();
   }
 
