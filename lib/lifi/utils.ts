@@ -3,7 +3,6 @@ import { getToken } from '@lifi/sdk';
 export async function fetchTokenPrice(chainId: number, tokenAddress: string): Promise<string | null> {
     try {
       const token = await getToken(chainId, tokenAddress);
-      console.log('Token fetched:', token);
       return token.priceUSD;
     } catch (error) {
       console.error('Error fetching token:', error);

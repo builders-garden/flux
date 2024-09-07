@@ -1,4 +1,5 @@
 "use client";
+import IDKit from "@/components/id-kit";
 import { usePaymentLink } from "@/hooks";
 import { Token, TOKENS } from "@/lib/constants";
 import { shortenAddress } from "@/lib/utils";
@@ -18,10 +19,9 @@ export default function PayPage({
   const { address } = useAccount();
   const [selectedToken, setSelectedToken] = useState<Set<number>>(new Set([]));
   const [email, setEmail] = useState<string>("");
-  // const [worldcoinVerified, setWorldcoinVerified] = useState<boolean>(false);
-
-  console.log(address);
-
+  const [worldIdVerified, setWorldIdVerified] = useState<boolean>(
+    !paymentLink || paymentLink?.requiresWorldId ? false : true
+  );
   if (isPending || !paymentLink) {
     return (
       <div className="min-h-screen min-w-screen">
@@ -63,7 +63,7 @@ export default function PayPage({
             )}
           </h2>
         </div>
-        <div className="col-span-2 bg-white p-4 h-full flex flex-col items-center justify-center w-full max-w-md mx-auto space-y-2">
+        <div className="col-span-2 bg-white p-4 h-full flex flex-col items-center justify-center w-full max-w-md mx-auto space-y-4">
           {address && (
             <>
               <Input
@@ -107,25 +107,23 @@ export default function PayPage({
                 )}
               </Select>
               {paymentLink?.requiresWorldId && (
-                <Button
-                  color="primary"
-                  className="w-full"
-                  startContent={
-                    <Image
-                      src={"/logos/worldcoin.svg"}
-                      width={24}
-                      height={24}
-                      alt="Worldcoin Logo"
-                    />
-                  }
-                >
-                  Verify yourself with World ID
-                </Button>
+                <IDKit
+                  productId={paymentLink?.product.id}
+                  paymentLinkId={paymentLink?.id}
+                  onSuccess={() => {
+                    console.log("World ID verified");
+                    setWorldIdVerified(true);
+                  }}
+                  onError={() => {
+                    console.error("Error verifying World ID");
+                    setWorldIdVerified(false);
+                  }}
+                />
               )}
               <Button
                 color="success"
                 className="w-full"
-                isDisabled={!email || !selectedToken}
+                isDisabled={!email || !selectedToken || !worldIdVerified}
               >
                 Pay
               </Button>

@@ -31,6 +31,11 @@ model User {
   webhooks            Webhook[]
 }
 
+enum PaymentMethod {
+  RECURRING
+  ONE_TIME
+}
+
 model Product {
   id               String        @id @default(uuid())
   name             String
@@ -41,6 +46,7 @@ model Product {
   updatedAt        DateTime      @updatedAt
   userId           String
   user             User          @relation(fields: [userId], references: [id])
+  paymentMethod    PaymentMethod @default(ONE_TIME)
   paymentLinks     PaymentLink[]
   transactions     Transaction[]
 }

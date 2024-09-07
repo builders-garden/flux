@@ -31,9 +31,6 @@ export default function SettingsPage() {
       setFullName(currentUser.fullName || "");
     }
   }, [currentUser]);
-
-  console.log("CURRENT USER", currentUser);
-
   const updateUser = async () => {
     if (!currentUser) return;
     setLoading(true);

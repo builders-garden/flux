@@ -106,7 +106,6 @@ export default function LinksTable({
     ) => {
       // @ts-expect-error - Fix this
       const cellValue = paymentLink[columnKey];
-      console.log(paymentLink);
       if (cellValue instanceof Date) {
         return cellValue;
       }

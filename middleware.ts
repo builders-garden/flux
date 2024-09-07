@@ -17,6 +17,11 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
+  if (req.url.includes("/api/payment-links/") && req.url.includes("/verify")) {
+    // If the request is for the payment link verification endpoint, continue processing the request
+    return NextResponse.next();
+  }
+
   if (req.url.includes("/api/qstash/")) {
     // If the request is for a QStash endpoint, check the signature
     const receiver = new Receiver({
