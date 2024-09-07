@@ -62,7 +62,7 @@ export default function DeletePaymentLinkModal({
                 By clicking on <span className="font-bold">Confirm</span> you
                 will delete the{" "}
                 <span className="font-bold">{paymentLink?.name}</span> link.
-                There's no going back
+                There&apos;s no going back
               </p>
             </ModalBody>
             <ModalFooter>

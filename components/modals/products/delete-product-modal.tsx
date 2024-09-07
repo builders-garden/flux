@@ -60,8 +60,8 @@ export default function DeleteProductModal({
                 By clicking on <span className="font-bold">Confirm</span> you
                 will delete the{" "}
                 <span className="font-bold">{product?.name}</span> product.
-                There's no going back. You will lose all resources associated
-                with this product.
+                There&apos;s no going back. You will lose all resources
+                associated with this product.
               </p>
             </ModalBody>
             <ModalFooter>
