@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { Overpass_Mono } from "next/font/google";
-const overpass = Overpass_Mono({ subsets: ["latin"] });
-
+import { Overpass } from "next/font/google";
 import "./globals.css";
+import Providers from "./providers";
+
+const overpass = Overpass({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Swifty",
+  title: "Flux",
   description: "Financial infrastructure to grow your revenue",
 };
 
@@ -16,7 +17,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${overpass.className} antialiased`}>{children}</body>
+      <body className={`${overpass.className} antialiased h-screen`}>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

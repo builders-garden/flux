@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "lucide-react": "^0.439.0",
     "next": "14.2.8",
     "prisma": "^5.19.1",
     "react": "^18",
@@ -16,7 +17,7 @@
   },
   "devDependencies": {
     "@nextui-org/react": "^2.4.6",
-    "@privy-io/react-auth": "^1.79.0",
+    "@privy-io/react-auth": "^1.82.0",
     "@privy-io/server-auth": "^1.12.0",
     "@privy-io/wagmi": "^0.2.12",
     "@tanstack/react-query": "^5.52.1",
