@@ -25,6 +25,7 @@ model User {
   paymentLinks       PaymentLink[]
   customers           Customer[]
   transactions        Transaction[]
+  webhooks            Webhook[]
 }
 
 model Product {
@@ -60,6 +61,8 @@ model Webhook {
   name      String
   url       String
   event     String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
