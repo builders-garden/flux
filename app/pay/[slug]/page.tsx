@@ -1,5 +1,5 @@
 "use client";
-import IDKit from "@/components/id-kit";
+import WorldIDVerifyButton from "@/components/world-id-verify-button";
 import { usePaymentLink } from "@/hooks";
 import { Token, TOKENS } from "@/lib/constants";
 import { shortenAddress } from "@/lib/utils";
@@ -107,7 +107,7 @@ export default function PayPage({
                 )}
               </Select>
               {paymentLink?.requiresWorldId && (
-                <IDKit
+                <WorldIDVerifyButton
                   productId={paymentLink?.product.id}
                   paymentLinkId={paymentLink?.id}
                   onSuccess={() => {

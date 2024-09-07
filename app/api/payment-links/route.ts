@@ -3,6 +3,7 @@ import {
   getPaymentLinkBySlug,
   getPaymentLinksByUser,
 } from "@/lib/db/paymentLinks";
+import { getProductById } from "@/lib/db/products";
 import { createRecord } from "@/lib/db/records";
 import { getUserByAddress } from "@/lib/db/users";
 import { nameToSlug } from "@/lib/utils";
@@ -33,11 +34,16 @@ export const POST = async (req: NextRequest) => {
   const body = await req.json();
   const { name, productId, requiresWorldId, redirectUrl } = body;
 
+  const product = await getProductById(productId);
+  if (!product) {
+    return NextResponse.json({ error: "Product not found" }, { status: 404 });
+  }
+
   const slug = nameToSlug(name as string);
 
-  const existingProduct = await getPaymentLinkBySlug(slug);
+  const existingProductLink = await getPaymentLinkBySlug(slug);
 
-  if (existingProduct) {
+  if (existingProductLink) {
     return NextResponse.json(
       { error: "Payment link already exists" },
       { status: 400 }
@@ -56,7 +62,7 @@ export const POST = async (req: NextRequest) => {
   await createRecord(slug, address);
 
   if (requiresWorldId) {
-    await createNewIncognitoAction(productId, paymentLink.id, 1);
+    await createNewIncognitoAction(productId, product.name, paymentLink.id, 1);
   }
 
   return NextResponse.json(paymentLink);
