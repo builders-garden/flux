@@ -31,7 +31,7 @@ export const chainParser = (chainId: number): Chain => {
       return base;
     case 5000:
       return mantle;
-    case 713715: // Assuming this is the chainId for Sei
+    case 1329: 
       return sei;
     default:
       return base;

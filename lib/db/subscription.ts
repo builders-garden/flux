@@ -44,11 +44,9 @@ export async function getSubscriptionsBySubscriberAddress(
     where: { subscriberAddress },
   });
 }
-
-export async function getSubscriptionsByMerchantAddress(
-  merchantAddress: string
-) {
-  return prisma.subscription.findMany({
-    where: { merchantAddress },
-  });
+  
+export async function getSubscriptionsByMerchantAddress(merchantAddress: string) {
+    return prisma.subscription.findMany({
+      where: { merchantAddress },
+    });
 }
