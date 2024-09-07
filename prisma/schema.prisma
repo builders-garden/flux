@@ -70,9 +70,19 @@ model Webhook {
   userId    String
   user      User              @relation(fields: [userId], references: [id])
   eventLogs WebhookEventLog[]
-
+createdAt  DateTime              @default(now())
+  updatedAt  DateTime              @updatedAt
   @@unique([userId, eventType])
+}
 
+enum WebhookEventLogStatus {
+  SUCCESS
+  BAD_REQUEST
+  UNAUTHORIZED
+  NOT_FOUND
+  INTERNAL_SERVER_ERROR
+  TIMEOUT
+  UNKNOWN
 }
 
 model WebhookEventLog {
@@ -144,15 +154,5 @@ model Subscription {
 enum PaymentMethod {
   RECURRING
   ONE_TIME
-}
-
-enum WebhookEventLogStatus {
-  SUCCESS
-  BAD_REQUEST
-  UNAUTHORIZED
-  NOT_FOUND
-  INTERNAL_SERVER_ERROR
-  TIMEOUT
-  UNKNOWN
 }
 
