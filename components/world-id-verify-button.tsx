@@ -1,11 +1,11 @@
 "use client";
 import { PRODUCT_PURCHASE_ACTION_ID } from "@/lib/world-id";
-import { Button, Chip, Image } from "@nextui-org/react";
+import { Button, Image } from "@nextui-org/react";
 import { IDKitWidget, VerificationLevel } from "@worldcoin/idkit";
 import { CheckCircle } from "lucide-react";
 import { useState } from "react";
 
-export default function IDKit({
+export default function WorldIDVerifyButton({
   productId,
   paymentLinkId,
   onSuccess,
@@ -17,7 +17,7 @@ export default function IDKit({
   onError: () => void;
 }) {
   const [loading, setLoading] = useState(false);
-  const [isVerified, setIsVerified] = useState(true);
+  const [isVerified, setIsVerified] = useState(false);
   const verifyProof = async (proof: unknown) => {
     setLoading(true);
     const response = await fetch(`/api/payment-links/${paymentLinkId}/verify`, {
