@@ -12,3 +12,39 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id                 String        @id @default(uuid())
+  address            String
+  email              String        @unique
+  smartAccountAddress String
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  products           Product[]
+  paymentLinks       PaymentLink[]
+}
+
+model Product {
+  id               String        @id @default(uuid())
+  name             String
+  description      String
+  imageUrl         String
+  price            Decimal       @db.Decimal(10, 2)
+  paymentMethod    Boolean
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  userId           String
+  user             User          @relation(fields: [userId], references: [id])
+  paymentLinks     PaymentLink[]
+}
+
+model PaymentLink {
+  id          String   @id @default(uuid())
+  link        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id])
+}
