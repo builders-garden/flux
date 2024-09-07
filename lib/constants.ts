@@ -138,3 +138,5 @@ export const TOKENS: Token[] = [
     address: "0xb1a5700fA2358173Fe465e6eA4Ff52E36e88E2ad",
   },
 ];
+
+export const LIFI_DIAMOND_PROXY = "0x1231deb6f5749ef6ce6943a275a1d3e7486f4eae";
