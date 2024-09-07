@@ -1,5 +1,6 @@
 "use client";
 
+import { useUserStore } from "@/lib/store";
 import { shortenAddress } from "@/lib/utils";
 import {
   Button,
@@ -18,10 +19,12 @@ import {
   LogOutIcon,
   PackageSearchIcon,
   Repeat2Icon,
+  TerminalSquareIcon,
   Users2Icon,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface MenuItem {
   label: string;
@@ -69,16 +72,46 @@ export default function DashboardLayout({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { user } = usePrivy();
+  const { user, getAccessToken } = usePrivy();
+  const currentUser = useUserStore((state) => state.currentUser);
+  const setCurrentUser = useUserStore((state) => state.setCurrentUser);
+  const [loading, setLoading] = useState<boolean>(true);
   const { logout } = useLogout({
     onSuccess: () => router.replace("/"),
   });
 
-  if (!user || !user.wallet) {
+  useEffect(() => {
+    if (user && !currentUser) {
+      fetchCurrentUser();
+    }
+  }, [user, currentUser]);
+
+  const fetchCurrentUser = async () => {
+    try {
+      const response = await fetch("/api/users/me", {
+        headers: {
+          Authorization: `Bearer ${await getAccessToken()}`,
+        },
+      });
+
+      if (response.ok) {
+        const currentUser = await response.json();
+        setCurrentUser(currentUser);
+      }
+    } catch (error) {
+      console.error("Error fetching current user:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!user || !user.wallet || loading) {
     return (
       <section>
         <div className="flex flex-row justify-between p-4">
-          <h1 className="text-xl font-bold">Flux</h1>
+          <Link className="text-xl font-bold" href={"/"}>
+            Flux
+          </Link>
           <Skeleton className="flex w-36 h-10 rounded-lg" />
         </div>
       </section>
@@ -88,7 +121,9 @@ export default function DashboardLayout({
   return (
     <section className="h-full">
       <div className="flex flex-row justify-between p-4">
-        <h1 className="text-xl font-bold">Flux</h1>
+        <Link className="text-xl font-bold" href={"/"}>
+          Flux
+        </Link>
         <Dropdown>
           <DropdownTrigger>
             <Button color="primary">
@@ -105,10 +140,21 @@ export default function DashboardLayout({
               Settings
             </DropdownItem>
             <DropdownItem
+              startContent={<TerminalSquareIcon />}
+              as={Link}
+              href="/dashboard/developer"
+              key="developer"
+            >
+              Developer
+            </DropdownItem>
+            <DropdownItem
               key="logout"
               className="text-danger"
               color="danger"
-              onClick={() => logout()}
+              onClick={() => {
+                setCurrentUser(null);
+                logout();
+              }}
               startContent={<LogOutIcon />}
             >
               Logout

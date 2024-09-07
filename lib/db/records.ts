@@ -27,7 +27,7 @@ export const createRecord = async (slug: string, address: string) => {
         name: `${slug}.fluxlink.eth`,
         addresses: {},
         texts: {},
-        contenthash: campaignURI,
+        contenthash: campaignURI.replace("/index.html", ""),
       },
     });
 
