@@ -56,7 +56,7 @@ export async function getRecentCustomers(userId: string, { limit = 10, offset = 
   }
 }
 
-export async function getFirstTimeCustomers(userId: string, { limit = 10, offset = 0 }: PaginationInput = {}) {
+export async function getFirstTimeCustomers(userId: string, { limit = 100, offset = 0 }: PaginationInput = {}) {
     try {
       const customers = await prisma.customer.findMany({
         where: {
