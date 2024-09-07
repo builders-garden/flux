@@ -36,6 +36,7 @@ export const TOKENS: Token[] = [
     chainId: 10,
     chainName: "Optimism",
     address: "0x0000000000000000000000000000000000000000",
+    decimals: 18,
   },
 
   // Base (Chain ID: 8453)
@@ -58,6 +59,7 @@ export const TOKENS: Token[] = [
     chainId: 8453,
     chainName: "Base",
     address: "0x0000000000000000000000000000000000000000",
+    decimals: 18,
   },
 
   // Celo (Chain ID: 42220)
@@ -124,6 +126,7 @@ export const TOKENS: Token[] = [
     chainId: 5000,
     chainName: "Mantle",
     address: "0x0000000000000000000000000000000000000000",
+    decimals: 18,
   },
 
   // Blast (Chain ID: 81457)
@@ -139,6 +142,7 @@ export const TOKENS: Token[] = [
     chainId: 81457,
     chainName: "Blast",
     address: "0x0000000000000000000000000000000000000000",
+    decimals: 18,
   },
   {
     symbol: "WBTC",
