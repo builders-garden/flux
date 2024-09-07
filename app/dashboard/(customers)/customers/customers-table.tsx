@@ -16,7 +16,7 @@ import { columns } from "./data";
 import { SearchIcon } from "lucide-react";
 import { shortenAddress } from "@/lib/utils";
 
-const INITIAL_VISIBLE_COLUMNS = ["address", "creationDate", "numTransactions"];
+const INITIAL_VISIBLE_COLUMNS = ["address", "createdAt", "_count"];
 
 export default function CustomersTable({ users }: { users: any[] }) {
   const [filterValue, setFilterValue] = React.useState("");
@@ -64,6 +64,8 @@ export default function CustomersTable({ users }: { users: any[] }) {
     const cellValue = user[columnKey];
 
     switch (columnKey) {
+      case "_count":
+        return cellValue.transactions;
       case "address":
         if (user.ens) {
           return (

@@ -15,6 +15,7 @@ export const lifi = createConfig({
 
 export async function getRoutesResult(
   address: string,
+  toAddress: string,
   fromChainId: number,
   fromTokenAddress: string,
   fromAmount: string
@@ -24,6 +25,7 @@ export async function getRoutesResult(
     toChain: base.id,
     fromAddress: address,
     fromToken: fromTokenAddress,
+    toAddress: toAddress,
     toToken: USDC_BASE_ADDRESS,
     fromAmount,
     order: "FASTEST" as const,

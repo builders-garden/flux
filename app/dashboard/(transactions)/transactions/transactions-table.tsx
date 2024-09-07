@@ -13,18 +13,16 @@ import {
 import { columns } from "./data";
 import { SearchIcon } from "lucide-react";
 import { shortenAddress } from "@/lib/utils";
+import { Customer, Transaction } from "@prisma/client";
 
-const INITIAL_VISIBLE_COLUMNS = [
-  "txHash",
-  "amount",
-  "creationDate",
-  "customer",
-];
+const INITIAL_VISIBLE_COLUMNS = ["hash", "_count", "createdAt", "customer"];
+
+type TransactionWithCustomer = Transaction & { customer: Customer };
 
 export default function TransactionsTable({
   transactions,
 }: {
-  transactions: any[];
+  transactions: TransactionWithCustomer[];
 }) {
   const [filterValue, setFilterValue] = React.useState("");
   const [visibleColumns] = React.useState(new Set(INITIAL_VISIBLE_COLUMNS));
@@ -45,7 +43,7 @@ export default function TransactionsTable({
 
     if (hasSearchFilter) {
       filteredUsers = filteredUsers.filter((user) =>
-        user.customer.toLowerCase().includes(filterValue.toLowerCase())
+        user.customer.address.toLowerCase().includes(filterValue.toLowerCase())
       );
     }
 
@@ -61,11 +59,16 @@ export default function TransactionsTable({
     return filteredItems.slice(start, end);
   }, [page, filteredItems, rowsPerPage]);
 
-  const renderCell = React.useCallback((user: any, columnKey: any) => {
-    const cellValue = user[columnKey];
+  const renderCell = React.useCallback((transaction: any, columnKey: any) => {
+    const cellValue = transaction[columnKey];
+    console.log(transaction);
 
     switch (columnKey) {
-      case "txHash":
+      case "amount":
+        return `$${parseFloat(cellValue).toFixed(2)}`;
+      case "customer":
+        return shortenAddress(cellValue.address);
+      case "hash":
         return shortenAddress(cellValue);
       default:
         return cellValue;

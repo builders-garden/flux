@@ -1,4 +1,4 @@
-import { prisma } from "./index"
+import { prisma } from "./index";
 
 export async function createTransaction(data: {
   hash: string;
@@ -14,7 +14,7 @@ export async function createTransaction(data: {
     });
     return newTransaction;
   } catch (error) {
-    console.error('Error creating transaction:', error);
+    console.error("Error creating transaction:", error);
     throw error;
   } finally {
     await prisma.$disconnect();
@@ -28,25 +28,29 @@ export async function getTransactionsByCustomerId(customerId: string) {
     });
     return transactions;
   } catch (error) {
-    console.error('Error fetching transactions:', error);
+    console.error("Error fetching transactions:", error);
     throw error;
   } finally {
     await prisma.$disconnect();
   }
 }
 
-export async function getTransactionsByUserId(userId: string, {
-  limit = 10,
-  offset = 0,
-}: {
-  limit: number;
-  offset: number;
-}) {
+export async function getTransactionsByUserId(
+  userId: string,
+  {
+    limit = 10,
+    offset = 0,
+  }: {
+    limit: number;
+    offset: number;
+  }
+) {
   try {
     const transactions = await prisma.transaction.findMany({
       where: { userId },
       take: limit,
       skip: offset,
+      include: { customer: true },
     });
     const totalCount = await prisma.transaction.count({
       where: { userId },
@@ -56,7 +60,7 @@ export async function getTransactionsByUserId(userId: string, {
       totalCount,
     };
   } catch (error) {
-    console.error('Error fetching transactions:', error);
+    console.error("Error fetching transactions:", error);
     throw error;
   } finally {
     await prisma.$disconnect();

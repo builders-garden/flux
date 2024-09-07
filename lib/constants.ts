@@ -5,6 +5,7 @@ export interface Token {
   chainId: number;
   chainName: string;
   address: string;
+  decimals: number;
 }
 
 export const TOKENS: Token[] = [
@@ -14,24 +15,28 @@ export const TOKENS: Token[] = [
     chainId: 10,
     chainName: "Optimism",
     address: "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85",
+    decimals: 6,
   },
   {
     symbol: "USDT",
     chainId: 10,
     chainName: "Optimism",
     address: "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58",
+    decimals: 6,
   },
   {
     symbol: "DAI",
     chainId: 10,
     chainName: "Optimism",
     address: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
+    decimals: 18,
   },
   {
     symbol: "ETH",
     chainId: 10,
     chainName: "Optimism",
     address: "0x0000000000000000000000000000000000000000",
+    decimals: 18,
   },
 
   // Base (Chain ID: 8453)
@@ -40,18 +45,21 @@ export const TOKENS: Token[] = [
     chainId: 8453,
     chainName: "Base",
     address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    decimals: 6,
   },
   {
     symbol: "DAI",
     chainId: 8453,
     chainName: "Base",
     address: "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb",
+    decimals: 18,
   },
   {
     symbol: "ETH",
     chainId: 8453,
     chainName: "Base",
     address: "0x0000000000000000000000000000000000000000",
+    decimals: 18,
   },
 
   // Celo (Chain ID: 42220)
@@ -60,30 +68,35 @@ export const TOKENS: Token[] = [
     chainId: 42220,
     chainName: "Celo",
     address: "0x765de816845861e75a25fca122bb6898b8b1282a",
+    decimals: 18,
   },
   {
     symbol: "cEUR",
     chainId: 42220,
     chainName: "Celo",
     address: "0xd8763cba276a3738e6de85b4b3bf5fded6d6ca73",
+    decimals: 18,
   },
   {
     symbol: "DAI",
     chainId: 42220,
     chainName: "Celo",
     address: "0xe4fe50cdd716522a56204352f00aa110f731932d",
+    decimals: 18,
   },
   {
     symbol: "CELO",
     chainId: 42220,
     chainName: "Celo",
     address: "0x471EcE3750Da237f93B8E339c536989b8978a438",
+    decimals: 18,
   },
   {
     symbol: "WETH",
     chainId: 42220,
     chainName: "Celo",
     address: "0x122013fd7df1c6f636a5bb8f03108e876548b455",
+    decimals: 18,
   },
 
   // Mantle (Chain ID: 5000)
@@ -92,24 +105,28 @@ export const TOKENS: Token[] = [
     chainId: 5000,
     chainName: "Mantle",
     address: "0x09Bc4E0D864854c6aFB6eB9A9cdF58aC190D0dF9",
+    decimals: 6,
   },
   {
     symbol: "USDT",
     chainId: 5000,
     chainName: "Mantle",
     address: "0x201EBa5CC46D216Ce6DC03F6a759e8E766e956aE",
+    decimals: 6,
   },
   {
     symbol: "WETH",
     chainId: 5000,
     chainName: "Mantle",
     address: "0xdEAddEaDdeadDEadDEADDEAddEADDEAddead1111",
+    decimals: 18,
   },
   {
     symbol: "MNT",
     chainId: 5000,
     chainName: "Mantle",
     address: "0x0000000000000000000000000000000000000000",
+    decimals: 18,
   },
 
   // Blast (Chain ID: 81457)
@@ -118,23 +135,51 @@ export const TOKENS: Token[] = [
     chainId: 81457,
     chainName: "Blast",
     address: "0x4300000000000000000000000000000000000003",
+    decimals: 18,
   },
   {
     symbol: "ETH",
     chainId: 81457,
     chainName: "Blast",
     address: "0x0000000000000000000000000000000000000000",
+    decimals: 18,
   },
   {
     symbol: "WBTC",
     chainId: 81457,
     chainName: "Blast",
     address: "0xF7bc58b8D8f97ADC129cfC4c9f45Ce3C0E1D2692",
+    decimals: 8,
   },
   {
     symbol: "BLAST",
     chainId: 81457,
     chainName: "Blast",
     address: "0xb1a5700fA2358173Fe465e6eA4Ff52E36e88E2ad",
+    decimals: 18,
+  },
+  // Sei (Chain ID: 1329)
+  {
+    symbol: "USDC",
+    chainId: 1329,
+    chainName: "Sei",
+    address: "0x3894085Ef7Ff0f0aeDf52E2A2704928d1Ec074F1",
+    decimals: 6,
+  },
+  {
+    symbol: "USDT",
+    chainId: 1329,
+    chainName: "Sei",
+    address: "0xB75D0B03c06A926e488e2659DF1A861F860bD3d1",
+    decimals: 6,
+  },
+  {
+    symbol: "SEI",
+    chainId: 1329,
+    chainName: "Sei",
+    address: "0x0000000000000000000000000000000000000000",
+    decimals: 18,
   },
 ];
+
+export const LIFI_DIAMOND_PROXY = "0x1231deb6f5749ef6ce6943a275a1d3e7486f4eae";
