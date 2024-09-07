@@ -10,20 +10,29 @@ import {
   Input,
   Pagination,
   Chip,
+  Button,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+  useDisclosure,
 } from "@nextui-org/react";
 import { columns } from "./data";
-import { SearchIcon } from "lucide-react";
+import { FileJson2Icon, MoreVerticalIcon, SearchIcon } from "lucide-react";
 import { WebhookEventLog } from "@prisma/client";
+import { useJsonStore } from "@/lib/store";
+import ViewJsonModal from "@/components/modals/events/view-json-modal";
 
 const INITIAL_VISIBLE_COLUMNS = [
   "status",
   "statusCode",
-  //   "payload",
-  //   "response",
   "createdAt",
+  "actions",
 ];
 
 export default function EventsTable({ events }: { events: WebhookEventLog[] }) {
+  const { onOpen, isOpen, onOpenChange } = useDisclosure();
+  const set = useJsonStore((state) => state.set);
   const [filterValue, setFilterValue] = React.useState("");
   const [visibleColumns] = React.useState(new Set(INITIAL_VISIBLE_COLUMNS));
   const [statusFilter] = React.useState("all");
@@ -89,6 +98,43 @@ export default function EventsTable({ events }: { events: WebhookEventLog[] }) {
               </Chip>
             );
           }
+
+        case "actions":
+          return (
+            <Dropdown>
+              <DropdownTrigger>
+                <Button isIconOnly variant="light" size="sm">
+                  <MoreVerticalIcon size={14} />
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                aria-label="Static Actions"
+                disabledKeys={event.response ? [] : ["response"]}
+              >
+                <DropdownItem
+                  startContent={<FileJson2Icon size={14} />}
+                  key="payload"
+                  onClick={() => {
+                    set(event.payload);
+                    onOpen();
+                  }}
+                >
+                  View payload
+                </DropdownItem>
+                <DropdownItem
+                  startContent={<FileJson2Icon size={14} />}
+                  key="response"
+                  onClick={() => {
+                    set(event.response);
+                    onOpen();
+                  }}
+                >
+                  View response
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          );
+
         default:
           return cellValue;
       }
@@ -213,6 +259,11 @@ export default function EventsTable({ events }: { events: WebhookEventLog[] }) {
           )}
         </TableBody>
       </Table>
+      <ViewJsonModal
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        onOpen={onOpen}
+      />
     </>
   );
 }
