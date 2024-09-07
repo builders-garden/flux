@@ -1,13 +1,17 @@
-import { prisma } from "./index"
-
+import { prisma } from "./index";
 
 //Create User entry in DB
-export async function createUser(address: string, email: string) {
+export async function createUser(
+  address: string,
+  email: string,
+  smartAccountAddress: string
+) {
   try {
     const newUser = await prisma.user.create({
       data: {
         address: address.toLowerCase(),
         email,
+        smartAccountAddress,
       },
     });
     return newUser;
@@ -67,7 +71,7 @@ export async function getUserWithRelations(userId: string) {
 export async function getUserById(id: string) {
   try {
     const user = await prisma.user.findUnique({
-      where: { id }
+      where: { id },
     });
     return user;
   } catch (error) {

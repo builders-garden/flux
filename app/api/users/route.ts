@@ -3,8 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (req: NextRequest) => {
   const body = await req.json();
-  const { email, address } = body;
-  if (!email || !address) {
+  const { email, address, smartAccountAddress } = body;
+  if (!email || !address || !smartAccountAddress) {
     return NextResponse.json(
       { error: "Missing reqired filed 'email' or 'address'" },
       {
@@ -12,6 +12,6 @@ export const POST = async (req: NextRequest) => {
       }
     );
   }
-  const data = await createUser(address, email);
+  const data = await createUser(address, email, smartAccountAddress);
   return NextResponse.json(data);
 };

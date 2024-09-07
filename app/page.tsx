@@ -1,19 +1,23 @@
 "use client";
 
+import usePimlico from "@/hooks/use-pimlico";
 import { Button } from "@nextui-org/react";
 import { useLogin } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
   const router = useRouter();
+  const { smartAccountClient, predictSmartAccountAddress } = usePimlico();
   const { login } = useLogin({
     onComplete: async (user, isNewUser) => {
       if (isNewUser) {
+        const smartAccountAddress = await predictSmartAccountAddress();
         await fetch("/api/users", {
           method: "POST",
           body: JSON.stringify({
             email: user.email?.address,
             address: user.wallet?.address,
+            smartAccountAddress,
           }),
           headers: {
             "Content-Type": "application/json",

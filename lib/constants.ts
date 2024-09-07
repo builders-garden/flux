@@ -158,6 +158,28 @@ export const TOKENS: Token[] = [
     address: "0xb1a5700fA2358173Fe465e6eA4Ff52E36e88E2ad",
     decimals: 18,
   },
+  // Sei (Chain ID: 1329)
+  {
+    symbol: "USDC",
+    chainId: 1329,
+    chainName: "Sei",
+    address: "0x3894085Ef7Ff0f0aeDf52E2A2704928d1Ec074F1",
+    decimals: 6,
+  },
+  {
+    symbol: "USDT",
+    chainId: 1329,
+    chainName: "Sei",
+    address: "0xB75D0B03c06A926e488e2659DF1A861F860bD3d1",
+    decimals: 6,
+  },
+  {
+    symbol: "SEI",
+    chainId: 1329,
+    chainName: "Sei",
+    address: "0x0000000000000000000000000000000000000000",
+    decimals: 18,
+  },
 ];
 
 export const LIFI_DIAMOND_PROXY = "0x1231deb6f5749ef6ce6943a275a1d3e7486f4eae";
