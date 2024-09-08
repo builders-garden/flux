@@ -37,9 +37,9 @@ export default function Home() {
             Financial infrastructure to grow your revenue
           </div>
           <div className="text-lg text-center md:text-left">
-            Join the millions of companies of all sizes that use Stripe to
-            accept payments online and in person, embed financial services,
-            power custom revenue models, and build a more profitable business.
+            Companies use Flux to accept payments online and in person, embed
+            financial services, power custom revenue models, and build a more
+            profitable business.
           </div>
           <Button radius="full" color="primary" onClick={() => login()}>
             Start now
