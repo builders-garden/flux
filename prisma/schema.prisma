@@ -138,6 +138,7 @@ model Subscription {
   id                String   @id @default(uuid())
   subscriptionId    String
   hash              String   @unique
+  chainId           Int      @default(8453)
   subscriberAddress String
   merchantAddress   String
   tokenAddress      String
