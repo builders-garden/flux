@@ -1,4 +1,3 @@
-import { getWebhookById } from "@/lib/db/webhook";
 import { createWebhookEventLog } from "@/lib/db/webhook-event-logs";
 import { WebhookEventLogStatus } from "@prisma/client";
 import { createPrivateKey, sign } from "crypto";
