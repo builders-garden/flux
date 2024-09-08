@@ -1,4 +1,3 @@
-import { getWebhookById } from "@/lib/db/webhook";
 import { createWebhookEventLog } from "@/lib/db/webhook-event-logs";
 import { WebhookEventLogStatus } from "@prisma/client";
 import { createPrivateKey, sign } from "crypto";
@@ -55,6 +54,7 @@ export const POST = async (req: NextRequest) => {
   }
 
   const responseBody = await response.json();
+
   await createWebhookEventLog({
     webhookId: webhook.id,
     payload,
@@ -62,5 +62,6 @@ export const POST = async (req: NextRequest) => {
     statusCode: response.status,
     response: responseBody,
   });
+
   return NextResponse.json({ message: "OK" });
 };
