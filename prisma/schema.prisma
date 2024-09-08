@@ -21,6 +21,9 @@ model User {
   bankAccountNumber   String?
   bankAccountBic      String?
   bankAccountCountry  String?
+  bridgeExternalAccountId String?
+  bridgeCustomerId        String?
+  bridgeKycLinkId         String?
   customers           Customer[]
   paymentLinks        PaymentLink[]
   products            Product[]

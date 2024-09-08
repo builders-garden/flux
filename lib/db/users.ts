@@ -38,6 +38,12 @@ export async function updateUser(
     companyName?: string;
     companyUrl?: string;
     companyImage?: string;
+    bankAccountNumber?: string;
+    bankAccountBic?: string;
+    bankAccountCountry?: string;
+    bridgeExternalAccountId?: string | null;
+    bridgeCustomerId?: string | null;
+    bridgeKycLinkId?: string | null;
   }
 ) {
   try {
