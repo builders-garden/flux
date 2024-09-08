@@ -10,7 +10,7 @@ import {
 } from "@/lib/constants";
 import { getRoutesResult } from "@/lib/lifi/lifi";
 import { calculateTokenAmount } from "@/lib/lifi/utils";
-import { BASE_USDC_ADDRESS, shortenAddress } from "@/lib/utils";
+import { BASE_USDC_ADDRESS, chainParser, shortenAddress } from "@/lib/utils";
 import { getStepTransaction } from "@lifi/sdk";
 import {
   Input,
@@ -65,7 +65,18 @@ export default function PayPage({
 
       const [symbol, tokenAddress, chainId, decimals] = token.split("-");
 
-      await walletClient?.switchChain({ id: parseInt(chainId) });
+      try {
+        await walletClient?.switchChain({
+          id: parseInt(chainId),
+        });
+      } catch (error) {
+        await walletClient?.addChain({
+          chain: chainParser(parseInt(chainId)),
+        });
+        await walletClient?.switchChain({
+          id: parseInt(chainId),
+        });
+      }
 
       const amount = await calculateTokenAmount(
         parseInt(chainId),
@@ -305,7 +316,19 @@ export default function PayPage({
                     // @ts-expect-error - Fix this
                     const token = value.values().next().value;
                     const [, , chainId] = token.split("-");
-                    await walletClient?.switchChain({ id: parseInt(chainId) });
+
+                    try {
+                      await walletClient?.switchChain({
+                        id: parseInt(chainId),
+                      });
+                    } catch (error) {
+                      await walletClient?.addChain({
+                        chain: chainParser(parseInt(chainId)),
+                      });
+                      await walletClient?.switchChain({
+                        id: parseInt(chainId),
+                      });
+                    }
 
                     // @ts-expect-error - Fix this
                     setSelectedToken(value);
