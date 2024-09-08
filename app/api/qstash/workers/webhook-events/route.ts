@@ -54,6 +54,7 @@ export const POST = async (req: NextRequest) => {
   }
 
   const responseBody = await response.json();
+
   await createWebhookEventLog({
     webhookId: webhook.id,
     payload,
@@ -61,5 +62,6 @@ export const POST = async (req: NextRequest) => {
     statusCode: response.status,
     response: responseBody,
   });
+
   return NextResponse.json({ message: "OK" });
 };
