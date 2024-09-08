@@ -18,6 +18,9 @@ model User {
   companyName         String?
   companyUrl          String?
   companyImage        String?
+  bankAccountNumber   String?
+  bankAccountBic      String?
+  bankAccountCountry  String?
   customers           Customer[]
   paymentLinks        PaymentLink[]
   products            Product[]
