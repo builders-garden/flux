@@ -1,5 +1,5 @@
 import slugify from "slugify";
-import { Chain, celo, base, mantle, sei } from "viem/chains";
+import { Chain, celo, base, mantle, sei, blast } from "viem/chains";
 
 export const shortenAddress = (address: string) => {
   if (!address) return "";
@@ -31,7 +31,9 @@ export const chainParser = (chainId: number): Chain => {
       return base;
     case 5000:
       return mantle;
-    case 1329: 
+    case 81457:
+      return blast;
+    case 1329:
       return sei;
     default:
       return base;
