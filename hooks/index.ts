@@ -6,5 +6,6 @@ export * from "./use-products";
 export * from "./use-stats";
 export * from "./use-subscriptions";
 export * from "./use-transactions";
+export * from "./use-user-subscriptions";
 export * from "./use-webhook";
 export * from "./use-webhooks";

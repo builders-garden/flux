@@ -30,12 +30,18 @@ export const PUT = async (req: NextRequest) => {
   const fullName = body.get("fullName") as string;
   const companyName = body.get("companyName") as string;
   const companyUrl = body.get("companyUrl") as string;
+  const bankAccountNumber = body.get("bankAccountNumber") as string;
+  const bankAccountBic = body.get("bankAccountBic") as string;
+  const bankAccountCountry = body.get("bankAccountCountry") as string;
 
   const companyImage: File | null = body.get("files[0]") as unknown as File;
 
   let companyImageUrl: string = "";
   if (companyImage) {
-    companyImageUrl = await uploadImage(companyImage, `product-${name}-${user!.id}`);
+    companyImageUrl = await uploadImage(
+      companyImage,
+      `product-${name}-${user!.id}`
+    );
   }
   const data = await updateUser(user.id, {
     ...(email ? { email } : {}),
@@ -44,6 +50,9 @@ export const PUT = async (req: NextRequest) => {
     ...(companyName ? { companyName } : {}),
     ...(companyUrl ? { companyUrl } : {}),
     ...(companyImage ? { companyImage: companyImageUrl } : {}),
+    ...(bankAccountNumber ? { bankAccountNumber } : {}),
+    ...(bankAccountBic ? { bankAccountBic } : {}),
+    ...(bankAccountCountry ? { bankAccountCountry } : {}),
   });
   return NextResponse.json(data);
 };

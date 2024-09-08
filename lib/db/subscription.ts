@@ -42,6 +42,9 @@ export async function getSubscriptionsBySubscriberAddress(
 ) {
   return prisma.subscription.findMany({
     where: { subscriberAddress },
+    include: {
+      product: true,
+    },
   });
 }
 

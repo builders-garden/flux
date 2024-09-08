@@ -2,6 +2,7 @@
 import { useUserStore } from "@/lib/store";
 import { BASE_USDC_ADDRESS } from "@/lib/utils";
 import { Button, Card, CardBody, CardHeader, Divider } from "@nextui-org/react";
+import { AlertTriangleIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { createPublicClient, erc20Abi, formatUnits, http } from "viem";
 import { base } from "viem/chains";
@@ -63,6 +64,26 @@ export default function BalancesPage() {
       </div>
       <Divider />
       <div className="flex flex-col space-y-2">
+        {(!currentUser?.companyName ||
+          !currentUser?.companyUrl ||
+          !currentUser?.bankAccountBic ||
+          !currentUser.bankAccountCountry ||
+          !currentUser.bankAccountNumber) && (
+          <Card>
+            <CardBody className="bg-amber-500 text-amber-900 flex flex-row space-x-2 items-center">
+              <AlertTriangleIcon />
+              <p className="text-sm">
+                You need to provide your full name, company name and URL, and
+                the bank data in order to receive off-ramp payments from Flux.
+                <br />
+                Please check your <span className="font-bold">
+                  settings
+                </span>{" "}
+                page in the top right corner to update your profile.
+              </p>
+            </CardBody>
+          </Card>
+        )}
         <div className="flex flex-row items-center justify-between">
           <h2 className="text-2xl font-bold">Payouts</h2>
           <Button color="success">Payout</Button>
