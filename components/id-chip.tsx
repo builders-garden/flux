@@ -1,5 +1,5 @@
 import { Chip } from "@nextui-org/react";
-import { CopyCheckIcon, CopyIcon } from "lucide-react";
+import { CopyIcon } from "lucide-react";
 
 export default function IdChip({ id }: { id: string }) {
   const copyId = () => {

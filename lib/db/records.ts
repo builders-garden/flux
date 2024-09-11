@@ -22,13 +22,11 @@ export const createRecord = async (slug: string, address: string) => {
       files: [new File([generateHTML(slug)], `index.html`)],
     });
 
-    console.log(campaignURI);
 
     const ipfsHash = campaignURI
       .replace("ipfs://", "")
       .replace("/index.html", "");
 
-    console.log(ipfsHash);
 
     const encodedIpfsHash = "0x" + encode("ipfs", ipfsHash);
 

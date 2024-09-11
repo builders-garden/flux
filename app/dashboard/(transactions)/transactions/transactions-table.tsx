@@ -9,26 +9,43 @@ import {
   TableCell,
   Input,
   Pagination,
+  Avatar,
 } from "@nextui-org/react";
 import { columns } from "./data";
-import { SearchIcon } from "lucide-react";
+import {
+  ExternalLinkIcon,
+  LinkIcon,
+  PackageIcon,
+  SearchIcon,
+} from "lucide-react";
 import { shortenAddress } from "@/lib/utils";
-import { Customer, Transaction } from "@prisma/client";
+import { TransactionWithData } from "@/hooks";
+import Link from "next/link";
 
-const INITIAL_VISIBLE_COLUMNS = ["hash", "amount", "createdAt", "customer"];
-
-type TransactionWithCustomer = Transaction & { customer: Customer };
+const INITIAL_VISIBLE_COLUMNS = [
+  "hash",
+  "amount",
+  "createdAt",
+  "customer",
+  "product",
+];
 
 export default function TransactionsTable({
-  transactions,
+  data,
+  page,
+  rowsPerPage,
+  setPage,
+  setRowsPerPage,
 }: {
-  transactions: TransactionWithCustomer[];
+  data: { totalCount: number; transactions: TransactionWithData[] };
+  page: number;
+  rowsPerPage: number;
+  setPage: (page: number) => void;
+  setRowsPerPage: (rowsPerPage: number) => void;
 }) {
   const [filterValue, setFilterValue] = React.useState("");
   const [visibleColumns] = React.useState(new Set(INITIAL_VISIBLE_COLUMNS));
   const [statusFilter] = React.useState("all");
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [page, setPage] = React.useState(1);
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -39,7 +56,7 @@ export default function TransactionsTable({
   }, [visibleColumns]);
 
   const filteredItems = React.useMemo(() => {
-    let filteredUsers = [...transactions];
+    let filteredUsers = data?.transactions ?? [];
 
     if (hasSearchFilter) {
       filteredUsers = filteredUsers.filter((user) =>
@@ -48,20 +65,14 @@ export default function TransactionsTable({
     }
 
     return filteredUsers;
-  }, [transactions, filterValue, statusFilter]);
+  }, [data, filterValue, statusFilter]);
 
-  const pages = Math.ceil(filteredItems.length / rowsPerPage);
-
-  const items = React.useMemo(() => {
-    const start = (page - 1) * rowsPerPage;
-    const end = start + rowsPerPage;
-
-    return filteredItems.slice(start, end);
-  }, [page, filteredItems, rowsPerPage]);
+  const pages = data?.totalCount
+    ? Math.ceil(data?.totalCount / rowsPerPage)
+    : 0;
 
   const renderCell = React.useCallback((transaction: any, columnKey: any) => {
     const cellValue = transaction[columnKey];
-    console.log(transaction);
 
     switch (columnKey) {
       case "amount":
@@ -69,7 +80,31 @@ export default function TransactionsTable({
       case "customer":
         return shortenAddress(cellValue.address);
       case "hash":
-        return shortenAddress(cellValue);
+        return (
+          <Link
+            href={`https://base.blockscout.com/tx/${cellValue}`}
+            target="_blank"
+            className=" hover:text-blue-600 flex flex-row items-center gap-2"
+          >
+            <LinkIcon className="w-3 h-3" />
+            <div className="mt-1">{shortenAddress(cellValue)}</div>
+          </Link>
+        );
+      case "product":
+        return (
+          <div className="flex flex-row space-x-2 items-center">
+            {cellValue.imageUrl ? (
+              <Avatar size="md" radius="lg" src={cellValue.imageUrl} />
+            ) : (
+              <Avatar
+                size="md"
+                radius="lg"
+                icon={<PackageIcon color="grey" />}
+              />
+            )}
+            <p>{cellValue.name}</p>
+          </div>
+        );
       default:
         return cellValue;
     }
@@ -110,7 +145,7 @@ export default function TransactionsTable({
         </div>
         <div className="flex justify-between items-center">
           <span className="text-default-400 text-small">
-            Total {transactions.length} transactions
+            Total {data.totalCount} transactions
           </span>
           <label className="flex items-center text-default-400 text-small">
             Transactions per page:
@@ -118,9 +153,15 @@ export default function TransactionsTable({
               className="bg-transparent outline-none text-default-400 text-small"
               onChange={onRowsPerPageChange}
             >
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="15">15</option>
+              <option value="10" selected={rowsPerPage === 10}>
+                10
+              </option>
+              <option value="25" selected={rowsPerPage === 25}>
+                25
+              </option>
+              <option value="50" selected={rowsPerPage === 50}>
+                50
+              </option>
             </select>
           </label>
         </div>
@@ -128,16 +169,18 @@ export default function TransactionsTable({
     );
   }, [
     filterValue,
-    statusFilter,
-    visibleColumns,
-    onRowsPerPageChange,
-    transactions.length,
     onSearchChange,
-    hasSearchFilter,
+    data?.transactions?.length,
+    onRowsPerPageChange,
+    onClear,
   ]);
 
   const bottomContent = React.useMemo(() => {
-    if (transactions.length === 0) {
+    if (
+      !data?.transactions ||
+      data.transactions.length === 0 ||
+      data.transactions.length < rowsPerPage
+    ) {
       return <div />;
     }
     return (
@@ -155,7 +198,7 @@ export default function TransactionsTable({
         <div className="hidden sm:flex w-[30%] justify-end gap-2"></div>
       </div>
     );
-  }, [items.length, page, pages, hasSearchFilter]);
+  }, [page, pages, hasSearchFilter]);
 
   return (
     <Table
@@ -163,9 +206,6 @@ export default function TransactionsTable({
       isHeaderSticky
       bottomContent={bottomContent}
       bottomContentPlacement="outside"
-      classNames={{
-        wrapper: "max-h-[382px]",
-      }}
       topContent={topContent}
       topContentPlacement="outside"
     >
@@ -180,7 +220,10 @@ export default function TransactionsTable({
           </TableColumn>
         )}
       </TableHeader>
-      <TableBody emptyContent={"No transactions found"} items={items}>
+      <TableBody
+        emptyContent={"No transactions found"}
+        items={data.transactions}
+      >
         {(item) => (
           <TableRow key={item.id}>
             {(columnKey) => (

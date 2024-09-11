@@ -74,7 +74,6 @@ export default function SubscriptionsTable({
 
   const renderCell = React.useCallback((subscription: any, columnKey: any) => {
     const cellValue = subscription[columnKey];
-    console.log(subscription);
     switch (columnKey) {
       case "id":
         return <IdChip id={cellValue} />;

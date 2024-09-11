@@ -40,11 +40,6 @@ const menuItems: MenuItem[] = [
     icon: <HomeIcon />,
   },
   {
-    label: "Balances",
-    href: "/dashboard/balances",
-    icon: <CreditCardIcon />,
-  },
-  {
     label: "Transactions",
     href: "/dashboard/transactions",
     icon: <Repeat2Icon />,
@@ -116,7 +111,7 @@ export default function DashboardLayout({
       <section>
         <div className="flex flex-row justify-between p-4">
           <Link className="text-xl font-bold" href={"/"}>
-            Flux
+            Drift
           </Link>
           <Skeleton className="flex w-36 h-10 rounded-lg" />
         </div>
@@ -138,7 +133,7 @@ export default function DashboardLayout({
     <section className="h-full">
       <div className="flex flex-row justify-between p-4">
         <Link className="text-xl font-bold" href={"/"}>
-          Flux
+          Drift
         </Link>
         <Dropdown>
           <DropdownTrigger>

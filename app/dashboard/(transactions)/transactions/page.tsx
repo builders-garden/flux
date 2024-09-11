@@ -5,7 +5,7 @@ import TransactionsTable from "./transactions-table";
 import { useTransactions } from "@/hooks";
 
 export default function TransactionsPage() {
-  const { isPending, transactions } = useTransactions();
+  const { isPending, data, page, limit, setPage, setLimit } = useTransactions();
 
   if (isPending) {
     return (
@@ -20,9 +20,9 @@ export default function TransactionsPage() {
           <label className="flex items-center text-default-400 text-small">
             Transactions per page:
             <select className="bg-transparent outline-none text-default-400 text-small">
-              <option value="5">5</option>
               <option value="10">10</option>
-              <option value="15">15</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
             </select>
           </label>
         </div>
@@ -33,7 +33,13 @@ export default function TransactionsPage() {
   return (
     <section className="flex flex-col space-y-4">
       <h1 className="text-3xl font-bold">Transactions</h1>
-      <TransactionsTable transactions={transactions} />
+      <TransactionsTable
+        data={data!}
+        page={page}
+        rowsPerPage={limit}
+        setPage={setPage}
+        setRowsPerPage={setLimit}
+      />
     </section>
   );
 }

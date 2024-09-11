@@ -19,9 +19,7 @@ export const DELETE = async (
   }: { params: { customerId: string; externalAccountId: string } }
 ) => {
   const address = req.headers.get("x-address")!;
-  console.log({
-    address,
-  });
+
   const data = await deleteExternalAccount(customerId, externalAccountId);
   await updateUser(address, {
     bridgeExternalAccountId: null,

@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Overpass } from "next/font/google";
+import { Overpass_Mono } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
 
-const overpass = Overpass({ subsets: ["latin"] });
+const overpass = Overpass_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Flux",
+  title: "Drift",
   description: "Financial infrastructure to grow your revenue",
 };
 

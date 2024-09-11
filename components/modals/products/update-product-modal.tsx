@@ -160,11 +160,11 @@ export default function UpdateProductModal({
                 items={[
                   {
                     id: PaymentMethod.ONE_TIME,
-                    name: "One time payment",
+                    name: "One time (single checkout)",
                   },
                   {
                     id: PaymentMethod.RECURRING,
-                    name: "Each month",
+                    name: "Recurring (monthly)",
                   },
                 ]}
                 // label="Assigned to"

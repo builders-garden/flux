@@ -7,7 +7,6 @@ import { getProductById } from "@/lib/db/products";
 import { createRecord } from "@/lib/db/records";
 import { getUserByAddress } from "@/lib/db/users";
 import { nameToSlug } from "@/lib/utils";
-import { createNewIncognitoAction } from "@/lib/world-id";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (req: NextRequest) => {
@@ -60,10 +59,6 @@ export const POST = async (req: NextRequest) => {
   );
 
   await createRecord(slug, address);
-
-  if (requiresWorldId) {
-    await createNewIncognitoAction(productId, product.name, paymentLink.id, 1);
-  }
 
   return NextResponse.json(paymentLink);
 };

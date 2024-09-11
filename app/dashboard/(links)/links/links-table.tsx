@@ -38,7 +38,6 @@ const INITIAL_VISIBLE_COLUMNS = [
   "slug",
   "paymentLink",
   "product",
-  "requiresWorldId",
   "createdAt",
   "actions",
 ];
@@ -112,12 +111,6 @@ export default function LinksTable({
       switch (columnKey) {
         case "name":
           return <span className="font-bold">{cellValue}</span>;
-        case "requiresWorldId":
-          return cellValue ? (
-            <CheckCircle2Icon className="text-emerald-500" />
-          ) : (
-            <XCircleIcon className="text-red-500" />
-          );
         case "slug":
           return (
             <Chip

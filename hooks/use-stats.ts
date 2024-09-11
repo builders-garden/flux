@@ -14,6 +14,7 @@ export const useStats = () => {
             Authorization: `Bearer ${accessToken}`,
           },
         });
+
         return await response.json();
       } catch (error) {
         return null;
@@ -34,7 +35,11 @@ export const useStats = () => {
       numCustomers: number;
       numProducts: number;
       numSubscriptions: number;
-      transactions: Transaction[];
+      transactions: {
+        date: string;
+        count: number;
+        totalAmount: number;
+      }[];
     };
     refetch: () => void;
   };

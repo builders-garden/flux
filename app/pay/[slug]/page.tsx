@@ -1,17 +1,13 @@
 "use client";
-import WorldIDVerifyButton from "@/components/world-id-verify-button";
 import { usePaymentLink } from "@/hooks";
 import {
-  LIFI_DIAMOND_PROXY,
   RECURRING_PAYMENTS,
   RecurringPayment,
   Token,
   TOKENS,
 } from "@/lib/constants";
-import { getRoutesResult } from "@/lib/lifi/lifi";
 import { calculateTokenAmount } from "@/lib/lifi/utils";
-import { BASE_USDC_ADDRESS, chainParser, shortenAddress } from "@/lib/utils";
-import { getStepTransaction } from "@lifi/sdk";
+import { chainParser, shortenAddress } from "@/lib/utils";
 import {
   Input,
   Image,
@@ -23,7 +19,6 @@ import {
 import {
   ArrowRightIcon,
   CheckCircle2Icon,
-  CreditCardIcon,
   MailIcon,
   StoreIcon,
 } from "lucide-react";
@@ -49,19 +44,16 @@ export default function PayPage({
   const { address } = useAccount();
   const [selectedToken, setSelectedToken] = useState<Set<number>>(new Set([]));
   const [email, setEmail] = useState<string>("");
-  const [worldIdVerified, setWorldIdVerified] = useState<boolean>(
-    !paymentLink || paymentLink?.requiresWorldId ? false : true
-  );
   const [loading, setLoading] = useState<boolean>(false);
   const { data: walletClient } = useWalletClient();
   const publicClient = usePublicClient();
 
+  const isRecurring = paymentLink?.product.paymentMethod === "RECURRING";
+
   const pay = async () => {
     setLoading(true);
     try {
-      console.log(walletClient);
       const token = selectedToken.values().next().value;
-      console.log(token);
 
       const [symbol, tokenAddress, chainId, decimals] = token.split("-");
 
@@ -86,55 +78,7 @@ export default function PayPage({
 
       const tokenAmount = parseUnits(amount?.toString()!, parseInt(decimals));
 
-      const isBaseUSDC =
-        tokenAddress.toLowerCase() === BASE_USDC_ADDRESS.toLowerCase() &&
-        chainId === "8453";
-
-      const isRecurring = paymentLink?.product.paymentMethod === "RECURRING";
-
-      if (tokenAddress !== "0x0000000000000000000000000000000000000000") {
-        const allowance = await publicClient?.readContract({
-          abi: erc20Abi,
-          address: tokenAddress,
-          functionName: "allowance",
-          args: [address!, LIFI_DIAMOND_PROXY],
-        });
-
-        const totalSupply = await publicClient?.readContract({
-          abi: erc20Abi,
-          address: tokenAddress,
-          functionName: "totalSupply",
-        });
-
-        if (
-          typeof allowance !== "undefined" &&
-          typeof totalSupply !== "undefined" &&
-          ((allowance < tokenAmount && !isRecurring) ||
-            (allowance < totalSupply && isRecurring))
-        ) {
-          if (!isBaseUSDC || isRecurring) {
-            const approveTx = await walletClient?.writeContract({
-              abi: erc20Abi,
-              address: tokenAddress,
-              functionName: "approve",
-              args: [
-                LIFI_DIAMOND_PROXY,
-                paymentLink?.product.paymentMethod === "RECURRING"
-                  ? totalSupply!
-                  : tokenAmount,
-              ],
-            });
-
-            if (approveTx) {
-              await publicClient?.waitForTransactionReceipt({
-                hash: approveTx,
-              });
-            }
-          }
-        }
-      }
-
-      if (paymentLink?.product.paymentMethod === "RECURRING") {
+      if (isRecurring) {
         await fetch("/api/public/subscriptions", {
           method: "POST",
           body: JSON.stringify({
@@ -150,77 +94,33 @@ export default function PayPage({
           },
         });
       } else {
-        if (isBaseUSDC) {
-          // perform a transfer
-          const txHash = await walletClient?.writeContract({
-            abi: erc20Abi,
-            address: tokenAddress,
-            functionName: "transfer",
-            args: [paymentLink?.user.smartAccountAddress!, tokenAmount],
+        // perform a transfer
+        const txHash = await walletClient?.writeContract({
+          abi: erc20Abi,
+          address: tokenAddress,
+          functionName: "transfer",
+          args: [paymentLink?.user.smartAccountAddress!, tokenAmount],
+        });
+
+        if (txHash) {
+          const txReceipt = await publicClient?.waitForTransactionReceipt({
+            hash: txHash,
           });
 
-          if (txHash) {
-            const txReceipt = await publicClient?.waitForTransactionReceipt({
-              hash: txHash,
-            });
-
-            await fetch("/api/public/transactions", {
-              method: "POST",
-              body: JSON.stringify({
-                userId: paymentLink?.user.id,
-                productId: paymentLink?.product.id,
-                hash: txReceipt?.transactionHash,
-                amount: paymentLink?.product.price,
-                fromAddress: address,
-                timestamp: new Date().toISOString(),
-              }),
-              headers: {
-                "Content-Type": "application/json",
-              },
-            });
-          }
-        } else {
-          // call lifi
-          const lifiRoute = await getRoutesResult(
-            address!,
-            paymentLink?.user.smartAccountAddress!,
-            parseInt(chainId),
-            tokenAddress,
-            tokenAmount.toString()
-          );
-
-          const res = await getStepTransaction(lifiRoute.steps[0]);
-
-          if (res && res.transactionRequest) {
-            const txHash = await walletClient?.sendTransaction({
-              to: res.transactionRequest.to,
-              value: res.transactionRequest.value
-                ? BigInt(res.transactionRequest.value)
-                : BigInt(0),
-              data: res.transactionRequest.data! as `0x${string}`,
-            });
-
-            if (txHash) {
-              const txReceipt = await publicClient?.waitForTransactionReceipt({
-                hash: txHash,
-              });
-
-              await fetch("/api/public/transactions", {
-                method: "POST",
-                body: JSON.stringify({
-                  userId: paymentLink?.user.id,
-                  productId: paymentLink?.product.id,
-                  hash: txReceipt?.transactionHash,
-                  amount: paymentLink?.product.price,
-                  fromAddress: address,
-                  timestamp: new Date().toISOString(),
-                }),
-                headers: {
-                  "Content-Type": "application/json",
-                },
-              });
-            }
-          }
+          await fetch("/api/public/transactions", {
+            method: "POST",
+            body: JSON.stringify({
+              userId: paymentLink?.user.id,
+              productId: paymentLink?.product.id,
+              hash: txReceipt?.transactionHash,
+              amount: paymentLink?.product.price,
+              fromAddress: address,
+              timestamp: new Date().toISOString(),
+            }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
         }
       }
       setSuccess(true);
@@ -305,7 +205,7 @@ export default function PayPage({
               {/* <h3 className="text-lg font-semibold text-start">
                 Payment method
               </h3> */}
-              {paymentLink?.product.paymentMethod === "RECURRING" ? (
+              {isRecurring ? (
                 <Select
                   items={RECURRING_PAYMENTS}
                   variant="bordered"
@@ -384,36 +284,6 @@ export default function PayPage({
                   )}
                 </Select>
               )}
-              {paymentLink?.requiresWorldId && (
-                <WorldIDVerifyButton
-                  productId={paymentLink?.product.id}
-                  paymentLinkId={paymentLink?.id}
-                  onSuccess={() => {
-                    console.log("World ID verified");
-                    setWorldIdVerified(true);
-                  }}
-                  onError={() => {
-                    console.error("Error verifying World ID");
-                    setWorldIdVerified(false);
-                  }}
-                />
-              )}
-              <Button
-                color="success"
-                className="w-full font-bold"
-                isDisabled={
-                  !email ||
-                  selectedToken.size === 0 ||
-                  (paymentLink?.requiresWorldId && !worldIdVerified)
-                }
-                startContent={<CreditCardIcon />}
-                isLoading={loading}
-                onClick={pay}
-              >
-                {paymentLink?.product.paymentMethod === "RECURRING"
-                  ? "Subscribe"
-                  : "Pay"}
-              </Button>
             </>
           )}
           {!address && (

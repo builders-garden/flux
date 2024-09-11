@@ -40,6 +40,5 @@ export async function createSubscription(
     value: BigInt("0"),
     data: data,
   });
-  console.log(txHash, "txHash");
   return txHash;
 }

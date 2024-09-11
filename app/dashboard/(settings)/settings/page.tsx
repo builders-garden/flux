@@ -26,15 +26,6 @@ export default function SettingsPage() {
     currentUser?.companyUrl || ""
   );
   const [fullName, setFullName] = useState<string>(currentUser?.fullName || "");
-  const [bankAccountNumber, setBankAccountNumber] = useState<string>(
-    currentUser?.bankAccountNumber || ""
-  );
-  const [bankAccountBic, setBankAccountBic] = useState<string>(
-    currentUser?.bankAccountBic || ""
-  );
-  const [bankAccountCountry, setBankAccountCountry] = useState<string>(
-    currentUser?.bankAccountCountry || ""
-  );
 
   useEffect(() => {
     if (currentUser) {
@@ -84,21 +75,6 @@ export default function SettingsPage() {
   return (
     <section className="flex flex-col space-y-4">
       <h1 className="text-3xl font-bold">Settings</h1>
-      {(!currentUser?.companyName ||
-        !currentUser?.companyUrl ||
-        !currentUser?.bankAccountBic ||
-        !currentUser.bankAccountCountry ||
-        !currentUser.bankAccountNumber) && (
-        <Card>
-          <CardBody className="bg-amber-500 flex flex-row space-x-2 text-amber-900 items-center">
-            <AlertTriangleIcon />
-            <p className="text-sm">
-              You need to provide your full name, company name and URL, and the
-              bank data in order to receive off-ramp payments from Flux.
-            </p>
-          </CardBody>
-        </Card>
-      )}
       <div className="grid grid-cols-4 gap-4">
         <Input
           endContent={
@@ -114,11 +90,21 @@ export default function SettingsPage() {
           endContent={
             <CreditCardIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
           }
-          label="Address"
+          label="Address (Embedded Wallet)"
           variant="bordered"
           isDisabled
           value={currentUser?.address}
-          className="col-span-2"
+          className="col-span-1"
+        />
+        <Input
+          endContent={
+            <CreditCardIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+          }
+          label="Address (Smart Account)"
+          variant="bordered"
+          isDisabled
+          value={currentUser?.smartAccountAddress!}
+          className="col-span-1"
         />
         <Input
           endContent={
@@ -154,42 +140,6 @@ export default function SettingsPage() {
           className="col-span-2"
           value={companyUrl}
           onValueChange={setCompanyUrl}
-          isRequired
-        />
-        <Input
-          endContent={
-            <BanknoteIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
-          }
-          label="Bank Account Number"
-          variant="bordered"
-          placeholder="IT 1234 1234 1234 1234"
-          className="col-span-2"
-          value={bankAccountNumber}
-          onValueChange={setBankAccountNumber}
-          isRequired
-        />
-        <Input
-          endContent={
-            <FileDigitIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
-          }
-          label="Bank Account BIC"
-          variant="bordered"
-          placeholder="REVOLT21"
-          className="col-span-1"
-          value={bankAccountBic}
-          onValueChange={setBankAccountBic}
-          isRequired
-        />
-        <Input
-          endContent={
-            <FlagIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
-          }
-          label="Bank Account Country"
-          variant="bordered"
-          placeholder="Italy"
-          className="col-span-1"
-          value={bankAccountCountry}
-          onValueChange={setBankAccountCountry}
           isRequired
         />
       </div>

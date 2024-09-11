@@ -34,7 +34,6 @@ export default function useFetchBankAccount({
         }
       );
       const data = await res.json();
-      console.log(data);
       setData(data);
     } catch (error: any) {
       setError(error.message);

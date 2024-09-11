@@ -10,7 +10,6 @@ export default function WebhookPage({
   params: { webhookId: string };
 }) {
   const { webhook, isPending } = useWebhook(webhookId);
-  console.log(webhook);
 
   if (isPending) {
     return (

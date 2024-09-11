@@ -4,6 +4,7 @@ const columns = [
   { name: "AMOUNT", uid: "amount" },
   { name: "CREATION DATE", uid: "createdAt" },
   { name: "CUSTOMER", uid: "customer" },
+  { name: "PRODUCT", uid: "product" },
 ];
 
 export { columns };

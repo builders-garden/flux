@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { getTransactionsStats } from "@/lib/db/transactions";
 import { getUserByAddress } from "@/lib/db/users";
 import { NextResponse } from "next/server";
 
@@ -29,15 +30,11 @@ export const GET = async (req: Request) => {
           merchantAddress: user.smartAccountAddress!,
         },
       }),
-      prisma.transaction.findMany({
-        where: {
-          userId: user.id,
-        },
-      }),
+      getTransactionsStats(user.id),
     ]);
 
   const totalAmount = transactions.reduce(
-    (acc, transaction) => acc + parseFloat(transaction.amount),
+    (acc, transaction) => acc + transaction.totalAmount,
     0
   );
 
